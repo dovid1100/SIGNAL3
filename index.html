@@ -11,14 +11,10 @@ body{background:#040407;color:#e2e8f0;font-family:'IBM Plex Mono','Courier New',
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
 #config-banner{background:#0a0f1a;border-bottom:1px solid #ff2d5540;padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-#config-banner input{flex:1;min-width:180px;background:#05080d;border:1px solid #1e293b;color:#e2e8f0;padding:7px 10px;font-family:inherit;font-size:11px;outline:none;border-radius:2px}
+#config-banner input{flex:1;min-width:200px;background:#05080d;border:1px solid #1e293b;color:#e2e8f0;padding:7px 10px;font-family:inherit;font-size:11px;outline:none;border-radius:2px}
 #config-banner input:focus{border-color:#00ff88}
 #config-banner button{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.4);color:#00ff88;padding:7px 16px;font-family:inherit;font-size:10px;letter-spacing:.1em;cursor:pointer;white-space:nowrap}
 #config-label{color:#475569;font-size:9px;letter-spacing:.1em;white-space:nowrap}
-#key-status{font-size:8px;letter-spacing:.08em;white-space:nowrap;padding:4px 8px;border-radius:2px}
-#key-status.ok{color:#00ff88;background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.2)}
-#key-status.bad{color:#ff2d55;background:rgba(255,45,85,.07);border:1px solid rgba(255,45,85,.2)}
-#key-status.none{color:#475569;background:rgba(71,85,105,.07);border:1px solid #1a2535}
 header{border-bottom:1px solid #0a1220;padding:0 16px;background:#040407;position:sticky;top:0;z-index:50}
 .hdr{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:50px}
 .logo{display:flex;align-items:center;gap:10px}
@@ -97,8 +93,7 @@ main{max-width:1100px;margin:0 auto;padding:16px}
 .log-section{margin-top:18px;border-top:1px solid #0a1220;padding-top:13px}
 .log-title{font-size:7px;color:#111c2a;letter-spacing:.18em;margin-bottom:7px}
 .log-row{display:flex;gap:8px;font-size:7.5px;padding:3px 0;border-bottom:1px solid rgba(10,18,32,.8)}
-.lt{color:#1a2535;flex-shrink:0;min-width:70px}
-.ls{color:#0f1923}
+.lt{color:#1a2535;flex-shrink:0;min-width:70px}.ls{color:#0f1923}
 .lm{word-break:break-all;line-height:1.5}
 .lm.info{color:#f59e0b}.lm.found{color:#00ff88}.lm.clear{color:#334155}.lm.error{color:#ff2d55}
 /* TRACKER */
@@ -173,10 +168,9 @@ main{max-width:1100px;margin:0 auto;padding:16px}
 <body>
 
 <div id="config-banner">
-  <span id="config-label">ANTHROPIC API KEY:</span>
-  <input type="password" id="api-key-input" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false"/>
+  <span id="config-label">BACKEND URL:</span>
+  <input type="text" id="api-url" placeholder="https://signal-3.vercel.app/api/scan"/>
   <button id="save-btn">SAVE &amp; SCAN</button>
-  <span id="key-status" class="none">NO KEY SET</span>
 </div>
 
 <header>
@@ -222,9 +216,9 @@ main{max-width:1100px;margin:0 auto;padding:16px}
     </div>
     <div class="feed" id="feed">
       <div class="empty-box">
-        <div class="empty-icon">🔑</div>
-        <div class="empty-title">ENTER API KEY TO START</div>
-        <div class="empty-sub">Paste your Anthropic API key above and click SAVE &amp; SCAN</div>
+        <div class="empty-icon">📡</div>
+        <div class="empty-title">AWAITING SIGNALS</div>
+        <div class="empty-sub">Enter your backend URL above and click SAVE &amp; SCAN</div>
       </div>
     </div>
     <div class="log-section" id="log-section" style="display:none">
@@ -266,131 +260,84 @@ main{max-width:1100px;margin:0 auto;padding:16px}
 <script>
 var CATALYST_COLORS={"Earnings Beat":"#00ff88","M&A Deal":"#00d4ff","FDA Approval":"#ff6b35","Contract Win":"#ffd700","Analyst Upgrade":"#a78bfa","Regulatory Win":"#34d399","Macro Tailwind":"#60a5fa","Short Squeeze":"#f472b6","Guidance Raise":"#4ade80","Clinical Trial":"#f97316","Biotech Catalyst":"#e879f9"};
 var URGENCY_COLORS={Critical:{c:"#ff2d55",bg:"rgba(255,45,85,0.15)"},High:{c:"#ff9500",bg:"rgba(255,149,0,0.12)"},Medium:{c:"#ffd60a",bg:"rgba(255,214,10,0.10)"}};
-
-var PROMPT_LARGE=`You are SIGNAL, an elite stock market intelligence AI. Search the web RIGHT NOW for breaking financial news from the last 2 hours on large cap and mid cap US stocks.\n\nSearch for: FDA approvals, earnings beats, raised guidance, M&A acquisitions at a premium, major contract wins, analyst upgrades with price target increases, regulatory approvals, clinical trial phase readouts.\n\nONLY exclude: cryptocurrency, crypto tokens, crypto ETFs.\n\nReturn ONLY a raw JSON object, no markdown, no explanation:\n{"alerts":[{"ticker":"AAPL","company":"Apple Inc","headline":"Short headline max 10 words","estimatedUpside":8,"catalystType":"Earnings Beat","urgency":"High","timeframe":"hours","summary":"2-3 sentences explaining exactly what happened.","reasoning":"Why this specifically causes a 5%+ move.","confidence":82,"source":"https://reuters.com/exact-url","sourceName":"Reuters","newsTime":"Today at 9:45 AM ET"}],"storiesAnalyzed":15}\n\ncatalystType: Earnings Beat, M&A Deal, FDA Approval, Contract Win, Analyst Upgrade, Regulatory Win, Macro Tailwind, Guidance Raise, Clinical Trial, Biotech Catalyst\nurgency: Critical, High, Medium — timeframe: hours, days, weeks\n\nRULES: Only real stories from last 2 hours. Every alert MUST have a real source URL. estimatedUpside >= 5. If nothing qualifies: {"alerts":[],"storiesAnalyzed":10}`;
-
-var PROMPT_SMALLCAP=`You are SIGNAL, a stock market intelligence AI specializing in small cap and micro cap US stocks. Search the web RIGHT NOW for:\n\n1. SEC EDGAR 8-K filings today — material events, LOIs, contract wins\n2. OTC Markets news — OTC Pink, OTCQB, OTCQX major announcements\n3. Short squeeze candidates — >20% short float with a positive catalyst\n4. Micro cap FDA events — IND approvals, fast track, orphan drug (under $500M market cap)\n5. Penny stock volume spikes — sub-$5 stocks with volume 5x+ average on a real catalyst\n6. Small cap earnings surprises — under $1B market cap, beat estimates by >20%\n7. Uplisting to NYSE or NASDAQ announcements\n\nReturn ONLY a raw JSON object, no markdown:\n{"alerts":[{"ticker":"MXCT","company":"MaxCyte Inc","headline":"Short headline max 10 words","estimatedUpside":35,"catalystType":"FDA Approval","urgency":"Critical","timeframe":"hours","summary":"2-3 sentences.","reasoning":"Why 5%+ move. Note short interest or volume if relevant.","confidence":65,"source":"https://sec.gov/exact-url","sourceName":"SEC EDGAR","newsTime":"Today at 8:30 AM ET"}],"storiesAnalyzed":15}\n\ncatalystType: Earnings Beat, M&A Deal, FDA Approval, Contract Win, Analyst Upgrade, Regulatory Win, Short Squeeze, Guidance Raise, Clinical Trial, Biotech Catalyst\nurgency: Critical, High, Medium — timeframe: hours, days, weeks\n\nRULES: Only real stories. Every alert MUST have a real source URL. confidence max 70 for penny stocks. If nothing qualifies: {"alerts":[],"storiesAnalyzed":10}`;
-
 var alerts=[],activeFilter="all",countdown=300,scanning=false,unread=0,seenKeys={},activeTab="signals",predictions=[],predFilter="all";
 var CHECK_AFTER_MS=60*1000;
 
-function isMarketHours(){var now=new Date(),et=new Date(now.toLocaleString("en-US",{timeZone:"America/New_York"})),day=et.getDay();if(day===0||day===6)return false;var mins=et.getHours()*60+et.getMinutes();return mins>=4*60&&mins<20*60;}
+function getUrl(){return localStorage.getItem("signal_url")||"https://signal-3.vercel.app/api/scan";}
 
-function getKey(){return localStorage.getItem("signal_api_key")||"";}
-function setKey(k){localStorage.setItem("signal_api_key",k);updateKeyStatus();}
-function updateKeyStatus(){
-  var k=getKey(),el=document.getElementById("key-status"),inp=document.getElementById("api-key-input");
-  if(!k){el.className="none";el.textContent="NO KEY SET";inp.value="";}
-  else if(k.startsWith("sk-ant-")){el.className="ok";el.textContent="✓ KEY SAVED";inp.value=k.slice(0,12)+"••••••••••••"+k.slice(-4);}
-  else{el.className="bad";el.textContent="⚠ INVALID FORMAT";}
-}
-
-function callClaude(prompt,label,cb){
-  var key=getKey();
-  if(!key){cb(null,"No API key");return;}
-  log("info",label+": calling Claude with web search...");
-  fetch("https://api.anthropic.com/v1/messages",{
-    method:"POST",
-    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-beta":"web-search-2025-03-05","anthropic-dangerous-direct-browser-io":"true"},
-    body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:4000,tools:[{type:"web_search_20250305",name:"web_search",max_uses:6}],messages:[{role:"user",content:prompt}]})
-  })
-  .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error("HTTP "+r.status+": "+t.slice(0,120));});return r.json();})
-  .then(function(data){
-    var text=(data.content||[]).filter(function(b){return b.type==="text";}).map(function(b){return b.text;}).join("\n");
-    try{var m=text.replace(/```[\w]*\n?/g,"").match(/\{[\s\S]*\}/);cb(m?JSON.parse(m[0]):{alerts:[],storiesAnalyzed:0});}
-    catch(e){cb({alerts:[],storiesAnalyzed:0});}
-  })
-  .catch(function(err){cb(null,err.message||String(err));});
-}
-
-function validateAlerts(arr){
-  if(!Array.isArray(arr))return[];
-  return arr.filter(function(a){
-    if(!a||typeof a.ticker!=="string"||!a.ticker.trim())return false;
-    if(!a.headline)return false;
-    if(!a.source||typeof a.source!=="string")return false;
-    var src=a.source.trim().toLowerCase();
-    if(!src.startsWith("http"))return false;
-    if(src.includes("example.com")||src.includes("url-here")||src.includes("placeholder"))return false;
-    if(isNaN(Number(a.estimatedUpside))||Number(a.estimatedUpside)<5)return false;
-    if(!["Critical","High","Medium"].includes(a.urgency))return false;
-    return true;
-  });
-}
-function dedupAlerts(arr){var seen={};return arr.filter(function(a){var k=a.ticker.toUpperCase().trim();if(seen[k])return false;seen[k]=true;return true;});}
+function log(status,msg){var sec=document.getElementById("log-section");sec.style.display="block";var row=document.createElement("div");row.className="log-row";row.innerHTML='<span class="lt">'+new Date().toLocaleTimeString()+'</span><span class="ls">›</span><span class="lm '+status+'">'+msg+'</span>';var rows=document.getElementById("log-rows");rows.insertBefore(row,rows.firstChild);while(rows.children.length>15)rows.removeChild(rows.lastChild);}
+function setScanning(on){scanning=on;document.getElementById("dot").className="dot"+(on?" on":"");var btn=document.getElementById("scan-btn");btn.textContent=on?"SCANNING":"SCAN NOW";btn.disabled=on;}
+function updateTimer(){var m=Math.floor(countdown/60),s=countdown%60;document.getElementById("timer-txt").textContent=scanning?"LIVE":(m+":"+(s<10?"0":"")+s);document.getElementById("fill").style.width=(scanning?100:((300-countdown)/300*100))+"%";}
+function updateStats(){document.getElementById("s-total").textContent=alerts.length;document.getElementById("s-crit").textContent=alerts.filter(function(a){return a.urgency==="Critical";}).length;document.getElementById("s-high").textContent=alerts.filter(function(a){return a.urgency==="High";}).length;document.getElementById("s-10p").textContent=alerts.filter(function(a){return(a.estimatedUpside||0)>=10;}).length;}
+function updateBell(){var b=document.getElementById("bell-badge");b.style.display=unread>0?"flex":"none";b.textContent=unread>9?"9+":unread;}
+function getFiltered(){if(activeFilter==="critical")return alerts.filter(function(a){return a.urgency==="Critical";});if(activeFilter==="high")return alerts.filter(function(a){return a.urgency==="Critical"||a.urgency==="High";});if(activeFilter==="10plus")return alerts.filter(function(a){return(a.estimatedUpside||0)>=10;});return alerts;}
 
 function runScan(){
-  var key=getKey();
-  if(!key){log("error","No API key. Enter your Anthropic API key above.");document.getElementById("feed").innerHTML='<div class="empty-box"><div class="empty-icon">🔑</div><div class="empty-title">API KEY REQUIRED</div><div class="empty-sub">Paste your Anthropic API key above and click SAVE &amp; SCAN</div></div>';return;}
+  var url=getUrl();
+  if(!url){log("error","No backend URL.");return;}
   if(scanning)return;
-  if(!isMarketHours()){
-    log("clear","⏸ Market closed — scanning paused until 4:00 AM ET (Mon–Fri)");
-    countdown=900;
-    if(alerts.length===0)document.getElementById("feed").innerHTML='<div class="empty-box"><div class="empty-icon">🌙</div><div class="empty-title">MARKET CLOSED</div><div class="empty-sub">Scanning resumes at 4:00 AM ET · Mon–Fri</div></div>';
-    return;
-  }
   setScanning(true);countdown=300;
-  log("info","Initiating dual scan (large cap + small cap)...");
-  var largeResult=null,smallResult=null,largeErr=null,smallErr=null,done=0;
-  function onBothDone(){
-    if(largeErr&&smallErr){log("error","Both scans failed: "+largeErr);setScanning(false);return;}
-    var combined=[],totalAnalyzed=0;
-    if(largeResult){combined=combined.concat(largeResult.alerts||[]);totalAnalyzed+=largeResult.storiesAnalyzed||0;}
-    if(smallResult){combined=combined.concat(smallResult.alerts||[]);totalAnalyzed+=smallResult.storiesAnalyzed||0;}
-    var deduped=dedupAlerts(validateAlerts(combined));
-    deduped.sort(function(a,b){var ord={Critical:0,High:1,Medium:2};var d=(ord[a.urgency]||2)-(ord[b.urgency]||2);return d!==0?d:(b.estimatedUpside||0)-(a.estimatedUpside||0);});
-    var fresh=deduped.filter(function(a){if(!a||!a.ticker)return false;var k=a.ticker+"|"+a.headline;if(seenKeys[k])return false;seenKeys[k]=true;return true;}).map(function(a){return Object.assign({},a,{id:a.ticker+"-"+Date.now()+"-"+Math.random(),ts:Date.now(),isNew:true});});
-    if(fresh.length>0){
-      alerts=fresh.concat(alerts).slice(0,50);unread+=fresh.length;
-      fresh.forEach(function(a){logPrediction(a);});updateTrackerBadge();
-      updateBell();var bell=document.getElementById("bell");bell.classList.add("shakeme");setTimeout(function(){bell.classList.remove("shakeme");},700);
-      setTimeout(function(){fresh.forEach(function(a){a.isNew=false;});renderFeed();},30000);
-      if(window.Notification&&Notification.permission==="granted")new Notification("SIGNAL: "+fresh.length+" new alert"+(fresh.length>1?"s":""),{body:fresh.map(function(a){return a.ticker+" +"+a.estimatedUpside+"% — "+a.headline;}).join("\n")});
-      var sb2=document.getElementById("tab-signals-badge");sb2.textContent=alerts.length;sb2.style.display="inline-block";
-    }
-    updateStats();renderFeed();
-    var sb=document.getElementById("status-bar");sb.style.display="flex";
-    document.getElementById("sb-time").textContent=new Date().toLocaleTimeString();
-    document.getElementById("sb-analyzed").textContent=totalAnalyzed+" stories analyzed";
-    var sbf=document.getElementById("sb-found");sbf.textContent=fresh.length>0?fresh.length+" signal(s) found":"no qualifying signals";sbf.style.color=fresh.length>0?"#00ff88":"#1a3a5c";
-    log(fresh.length>0?"found":"clear",fresh.length>0?"✓ "+fresh.length+" signal(s) — "+totalAnalyzed+" stories scanned":"No signals — "+totalAnalyzed+" stories scanned");
-    setScanning(false);
-  }
-  callClaude(PROMPT_LARGE,"LARGE-CAP",function(r,e){largeResult=r;largeErr=e;if(e)log("error","Large-cap error: "+e);else log("info","Large-cap done — "+(r.storiesAnalyzed||0)+" stories");if(++done===2)onBothDone();});
-  callClaude(PROMPT_SMALLCAP,"SMALL-CAP",function(r,e){smallResult=r;smallErr=e;if(e)log("error","Small-cap error: "+e);else log("info","Small-cap done — "+(r.storiesAnalyzed||0)+" stories");if(++done===2)onBothDone();});
+  log("info","Initiating market scan...");
+  fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"})
+    .then(function(r){log("info","HTTP "+r.status);if(!r.ok)return r.text().then(function(t){throw new Error("HTTP "+r.status+": "+t.slice(0,100));});return r.json();})
+    .then(function(data){
+      if(data.error)throw new Error("API: "+data.error);
+      if(data.marketClosed){
+        log("clear","⏸ "+(data.message||"Market closed — next scan at 4:00 AM ET"));
+        if(alerts.length===0)document.getElementById("feed").innerHTML='<div class="empty-box"><div class="empty-icon">🌙</div><div class="empty-title">MARKET CLOSED</div><div class="empty-sub">Scanning resumes at 4:00 AM ET · Mon–Fri</div></div>';
+        countdown=900;return;
+      }
+      var fresh=(data.alerts||[]).filter(function(a){if(!a||!a.ticker)return false;var k=a.ticker+"|"+a.headline;if(seenKeys[k])return false;seenKeys[k]=true;return true;}).map(function(a){return Object.assign({},a,{id:a.ticker+"-"+Date.now()+"-"+Math.random(),ts:Date.now(),isNew:true});});
+      if(fresh.length>0){
+        alerts=fresh.concat(alerts).slice(0,50);unread+=fresh.length;
+        fresh.forEach(function(a){logPrediction(a);});updateTrackerBadge();
+        updateBell();var bell=document.getElementById("bell");bell.classList.add("shakeme");setTimeout(function(){bell.classList.remove("shakeme");},700);
+        setTimeout(function(){fresh.forEach(function(a){a.isNew=false;});renderFeed();},30000);
+        if(window.Notification&&Notification.permission==="granted")new Notification("SIGNAL: "+fresh.length+" new alert"+(fresh.length>1?"s":""),{body:fresh.map(function(a){return a.ticker+" +"+a.estimatedUpside+"% — "+a.headline;}).join("\n")});
+        var sb2=document.getElementById("tab-signals-badge");sb2.textContent=alerts.length;sb2.style.display="inline-block";
+      }
+      updateStats();renderFeed();
+      var sb=document.getElementById("status-bar");sb.style.display="flex";
+      document.getElementById("sb-time").textContent=new Date().toLocaleTimeString();
+      document.getElementById("sb-analyzed").textContent=(data.storiesAnalyzed||0)+" stories analyzed";
+      var sbf=document.getElementById("sb-found");sbf.textContent=fresh.length>0?fresh.length+" signal(s) found":"no qualifying signals";sbf.style.color=fresh.length>0?"#00ff88":"#1a3a5c";
+      log(fresh.length>0?"found":"clear",fresh.length>0?"✓ "+fresh.length+" signal(s) — "+(data.storiesAnalyzed||0)+" stories scanned":"No signals — "+(data.storiesAnalyzed||0)+" stories scanned");
+    })
+    .catch(function(err){log("error","Exception: "+(err.message||String(err)));})
+    .finally(function(){setScanning(false);});
 }
+
+function renderFeed(){
+  var feed=document.getElementById("feed"),filtered=getFiltered();
+  document.getElementById("fcount").textContent=filtered.length+" RESULT"+(filtered.length!==1?"S":"");
+  if(alerts.length===0){feed.innerHTML='<div class="empty-box"><div class="empty-icon">'+(scanning?"":"📡")+'</div><div class="'+(scanning?"scanning-title":"empty-title")+'">'+(scanning?"SCANNING LIVE MARKETS":"AWAITING SIGNALS")+'</div><div class="empty-sub">'+(scanning?"Searching all stocks for 5%+ catalysts...":"Enter your backend URL above and click SAVE &amp; SCAN")+'</div></div>';return;}
+  if(filtered.length===0){feed.innerHTML='<div class="empty-box"><div class="empty-title">NO RESULTS FOR THIS FILTER</div></div>';return;}
+  var html="";
+  for(var i=0;i<filtered.length;i++){
+    var a=filtered[i],urg=URGENCY_COLORS[a.urgency]||URGENCY_COLORS.Medium,cc=CATALYST_COLORS[a.catalystType]||"#334155",conf=a.confidence||0,confColor=conf>=80?"#00ff88":conf>=65?"#ffd60a":"#ff9500";
+    var srcHtml=a.source?'<div class="dsource"><div class="dsource-lbl">SOURCE</div><div class="dsource-name">'+(a.sourceName||"Unknown")+(a.newsTime?" · "+a.newsTime:"")+'</div><a class="dsource-link" href="'+a.source+'" target="_blank">🔗 Verify this story →</a></div>':"";
+    html+='<div class="acard'+(a.urgency==="Critical"?" critical-card":"")+(a.isNew?" newin":"")+'" style="border-left-color:'+urg.c+'" onclick="toggleCard(\''+a.id+'\')"><div class="cbody"><div class="crow"><div class="ticker-box"><div class="tsym">'+a.ticker+'</div><div class="tco">'+(a.company||"").split(" ").slice(0,2).join(" ")+'</div></div><div class="cmid"><div class="badges">';
+    if(a.isNew)html+='<span class="bnew">NEW</span>';
+    html+='<span class="burg" style="color:'+urg.c+';border-color:'+urg.c+';background:'+urg.bg+'">'+(a.urgency||"").toUpperCase()+'</span><span class="bcat" style="color:'+cc+';border-color:'+cc+'44;background:'+cc+'0d">'+(a.catalystType||"")+'</span><span class="btime" style="color:#1a3a5c;border-color:#0f1923">⏱ '+(a.timeframe||"")+'</span></div><div class="chl">'+(a.headline||"")+'</div></div><div class="upbox"><div class="upnum">+'+(a.estimatedUpside||0)+'%</div><div class="uplbl">EST UPSIDE</div></div></div><div class="conf-row"><div class="ctrack"><div class="cfill" style="width:'+conf+'%;background:'+confColor+'"></div></div><span class="clbl">'+conf+'% CONF</span><span class="arrow" id="arrow-'+a.id+'">▼</span></div></div><div class="detail" id="detail-'+a.id+'" onclick="event.stopPropagation()"><div class="dlbl">WHAT HAPPENED</div><div class="dtxt">'+(a.summary||"")+'</div><div class="dreason" style="border-left-color:'+cc+'"><div class="dlbl">WHY 5%+ MOVE</div><div class="dtxt">'+(a.reasoning||"")+'</div></div><div class="dmeta"><span>TICKER <span>'+a.ticker+'</span></span><span>DETECTED <span>'+(a.ts?new Date(a.ts).toLocaleTimeString():"")+'</span></span></div>'+srcHtml+'</div></div>';
+  }
+  feed.innerHTML=html;
+}
+function toggleCard(id){var d=document.getElementById("detail-"+id),ar=document.getElementById("arrow-"+id);if(!d)return;var o=d.classList.toggle("open");ar.textContent=o?"▲":"▼";}
+function setFilter(f){activeFilter=f;["all","crit","high","10p"].forEach(function(x){document.getElementById("f-"+x).classList.remove("on");});var map={all:"f-all",critical:"f-crit",high:"f-high","10plus":"f-10p"};if(map[f])document.getElementById(map[f]).classList.add("on");renderFeed();}
+function switchTab(tab){activeTab=tab;document.getElementById("page-signals").classList.toggle("on",tab==="signals");document.getElementById("page-tracker").classList.toggle("on",tab==="tracker");document.getElementById("tab-signals").classList.toggle("on",tab==="signals");document.getElementById("tab-tracker").classList.toggle("on",tab==="tracker");if(tab==="tracker"){renderAccuracy();renderPredList();}}
 
 /* PREDICTION TRACKER */
 function loadPredictions(){try{var r=localStorage.getItem("signal_predictions");predictions=r?JSON.parse(r):[];}catch(e){predictions=[];}}
 function savePredictions(){try{localStorage.setItem("signal_predictions",JSON.stringify(predictions));}catch(e){}}
-function logPrediction(a){
-  if(predictions.some(function(p){return p.id===a.id;}))return;
-  predictions.unshift({id:a.id,ticker:a.ticker,company:a.company||"",headline:a.headline||"",catalystType:a.catalystType||"Unknown",urgency:a.urgency||"Medium",confidence:a.confidence||0,predictedUpside:a.estimatedUpside||0,loggedAt:Date.now(),outcome:"pending",actualMove24h:null,checkedAt:null,source:a.source||null});
-  savePredictions();updateTrackerBadge();
-}
-function fetchPriceChange(ticker,cb){
-  var url="https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(ticker)+"?interval=1d&range=5d";
-  fetch("https://corsproxy.io/?"+encodeURIComponent(url)).then(function(r){return r.json();}).then(function(d){
-    try{var closes=d.chart.result[0].indicators.quote[0].close.filter(function(v){return v!=null;});if(closes.length<2){cb(null);return;}cb(Math.round(((closes[closes.length-1]-closes[closes.length-2])/closes[closes.length-2]*100)*100)/100);}catch(e){cb(null);}
-  }).catch(function(){cb(null);});
-}
-function checkOutcome(predId){
-  var pred=predictions.find(function(p){return p.id===predId;});
-  if(!pred||pred.outcome!=="pending")return;
-  pred.outcome="checking";savePredictions();renderPredList();
-  fetchPriceChange(pred.ticker,function(pct){
-    pred.checkedAt=Date.now();
-    if(pct===null){pred.outcome="pending";pred.checkedAt=null;log("error","Could not fetch price for "+pred.ticker+" — try again later");}
-    else{pred.actualMove24h=pct;pred.outcome=pct>=5?"hit":"miss";log(pred.outcome==="hit"?"found":"clear",pred.ticker+" outcome: "+(pct>=0?"+":"")+pct+"% — "+(pred.outcome==="hit"?"✓ HIT":"✗ MISS"));}
-    savePredictions();renderPredList();renderAccuracy();updateTrackerBadge();
-  });
-}
+function logPrediction(a){if(predictions.some(function(p){return p.id===a.id;}))return;predictions.unshift({id:a.id,ticker:a.ticker,company:a.company||"",headline:a.headline||"",catalystType:a.catalystType||"Unknown",urgency:a.urgency||"Medium",confidence:a.confidence||0,predictedUpside:a.estimatedUpside||0,loggedAt:Date.now(),outcome:"pending",actualMove24h:null,checkedAt:null,source:a.source||null});savePredictions();updateTrackerBadge();}
+function fetchPriceChange(ticker,cb){var url="https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(ticker)+"?interval=1d&range=5d";fetch("https://corsproxy.io/?"+encodeURIComponent(url)).then(function(r){return r.json();}).then(function(d){try{var closes=d.chart.result[0].indicators.quote[0].close.filter(function(v){return v!=null;});if(closes.length<2){cb(null);return;}cb(Math.round(((closes[closes.length-1]-closes[closes.length-2])/closes[closes.length-2]*100)*100)/100);}catch(e){cb(null);}}).catch(function(){cb(null);});}
+function checkOutcome(predId){var pred=predictions.find(function(p){return p.id===predId;});if(!pred||pred.outcome!=="pending")return;pred.outcome="checking";savePredictions();renderPredList();fetchPriceChange(pred.ticker,function(pct){pred.checkedAt=Date.now();if(pct===null){pred.outcome="pending";pred.checkedAt=null;log("error","Could not fetch price for "+pred.ticker);}else{pred.actualMove24h=pct;pred.outcome=pct>=5?"hit":"miss";log(pred.outcome==="hit"?"found":"clear",pred.ticker+" outcome: "+(pct>=0?"+":"")+pct+"% — "+(pred.outcome==="hit"?"✓ HIT":"✗ MISS"));}savePredictions();renderPredList();renderAccuracy();updateTrackerBadge();});}
 function autoCheckPending(){var now=Date.now();predictions.forEach(function(p){if(p.outcome==="pending"&&(now-p.loggedAt)>=CHECK_AFTER_MS){if(!p._lastAutoCheck||(now-p._lastAutoCheck)>10*60*1000){p._lastAutoCheck=now;checkOutcome(p.id);}}});}
-function clearAllPredictions(){if(!confirm("Clear all prediction history? This cannot be undone."))return;predictions=[];savePredictions();renderPredList();renderAccuracy();updateTrackerBadge();}
-
+function clearAllPredictions(){if(!confirm("Clear all prediction history?"))return;predictions=[];savePredictions();renderPredList();renderAccuracy();updateTrackerBadge();}
+function updateTrackerBadge(){var p=predictions.filter(function(x){return x.outcome==="pending";}).length,b=document.getElementById("tab-tracker-badge");if(!b)return;b.style.display=p>0?"inline-block":"none";b.textContent=p;}
+function formatAge(ms){if(ms<0)return"now";var s=Math.floor(ms/1000);if(s<60)return s+"s";var m=Math.floor(s/60);if(m<60)return m+"m";var h=Math.floor(m/60);if(h<24)return h+"h";return Math.floor(h/24)+"d";}
 function setPredFilter(f){predFilter=f;["all","pending","hit","miss"].forEach(function(x){var el=document.getElementById("pf-"+x);if(el)el.classList.toggle("on",x===f);});renderPredList();}
 function getFilteredPreds(){if(predFilter==="pending")return predictions.filter(function(p){return p.outcome==="pending"||p.outcome==="checking";});if(predFilter==="hit")return predictions.filter(function(p){return p.outcome==="hit";});if(predFilter==="miss")return predictions.filter(function(p){return p.outcome==="miss";});return predictions;}
-
 function renderPredList(){
   var list=document.getElementById("pred-list");if(!list)return;
   var filtered=getFilteredPreds();
@@ -409,7 +356,6 @@ function renderPredList(){
   });
   list.innerHTML=html;
 }
-
 function renderAccuracy(){
   var resolved=predictions.filter(function(p){return p.outcome==="hit"||p.outcome==="miss";}),hits=resolved.filter(function(p){return p.outcome==="hit";});
   var oel=document.getElementById("acc-overall"),osel=document.getElementById("acc-overall-sub");
@@ -425,48 +371,13 @@ function renderAccuracy(){
   renderBreakdown("bk-confidence",groupBy(resolved.map(function(p){return Object.assign({},p,{confTier:p.confidence>=80?"High (80%+)":p.confidence>=65?"Medium (65-79%)":"Low (<65%)"});}), "confTier"),{"High (80%+)":"#00ff88","Medium (65-79%)":"#ffd60a","Low (<65%)":"#ff9500"});
 }
 function groupBy(arr,key){var out={};arr.forEach(function(i){var k=i[key]||"Unknown";if(!out[k])out[k]={hits:0,total:0};out[k].total++;if(i.outcome==="hit")out[k].hits++;});return out;}
-function renderBreakdown(id,groups,colorMap){
-  var el=document.getElementById(id);if(!el)return;
-  var keys=Object.keys(groups);
-  if(!keys.length){el.innerHTML='<div style="font-size:8px;color:#1a3a5c;padding:12px 0;text-align:center">No resolved signals yet</div>';return;}
-  keys.sort(function(a,b){return(groups[b].hits/groups[b].total)-(groups[a].hits/groups[a].total);});
-  el.innerHTML=keys.map(function(k){var g=groups[k],pct=Math.round(g.hits/g.total*100),c=colorMap[k]||"#334155";return'<div class="bk-row"><div class="bk-name" style="color:'+c+'">'+k+'</div><div class="bk-bar-wrap"><div class="bk-bar-fill" style="width:'+pct+'%;background:'+c+'"></div></div><div class="bk-pct" style="color:'+c+'">'+pct+'%</div><div class="bk-n">('+g.hits+'/'+g.total+')</div></div>';}).join("");
-}
-function updateTrackerBadge(){var p=predictions.filter(function(x){return x.outcome==="pending";}).length,b=document.getElementById("tab-tracker-badge");if(!b)return;b.style.display=p>0?"inline-block":"none";b.textContent=p;}
-function formatAge(ms){if(ms<0)return"now";var s=Math.floor(ms/1000);if(s<60)return s+"s";var m=Math.floor(s/60);if(m<60)return m+"m";var h=Math.floor(m/60);if(h<24)return h+"h";return Math.floor(h/24)+"d";}
+function renderBreakdown(id,groups,colorMap){var el=document.getElementById(id);if(!el)return;var keys=Object.keys(groups);if(!keys.length){el.innerHTML='<div style="font-size:8px;color:#1a3a5c;padding:12px 0;text-align:center">No resolved signals yet</div>';return;}keys.sort(function(a,b){return(groups[b].hits/groups[b].total)-(groups[a].hits/groups[a].total);});el.innerHTML=keys.map(function(k){var g=groups[k],pct=Math.round(g.hits/g.total*100),c=colorMap[k]||"#334155";return'<div class="bk-row"><div class="bk-name" style="color:'+c+'">'+k+'</div><div class="bk-bar-wrap"><div class="bk-bar-fill" style="width:'+pct+'%;background:'+c+'"></div></div><div class="bk-pct" style="color:'+c+'">'+pct+'%</div><div class="bk-n">('+g.hits+'/'+g.total+')</div></div>';}).join("");}
 
-/* SIGNALS HELPERS */
-function switchTab(tab){activeTab=tab;document.getElementById("page-signals").classList.toggle("on",tab==="signals");document.getElementById("page-tracker").classList.toggle("on",tab==="tracker");document.getElementById("tab-signals").classList.toggle("on",tab==="signals");document.getElementById("tab-tracker").classList.toggle("on",tab==="tracker");if(tab==="tracker"){renderAccuracy();renderPredList();}}
-function log(status,msg){var sec=document.getElementById("log-section");sec.style.display="block";var row=document.createElement("div");row.className="log-row";row.innerHTML='<span class="lt">'+new Date().toLocaleTimeString()+'</span><span class="ls">›</span><span class="lm '+status+'">'+msg+'</span>';var rows=document.getElementById("log-rows");rows.insertBefore(row,rows.firstChild);while(rows.children.length>15)rows.removeChild(rows.lastChild);}
-function setScanning(on){scanning=on;document.getElementById("dot").className="dot"+(on?" on":"");var btn=document.getElementById("scan-btn");btn.textContent=on?"SCANNING":"SCAN NOW";btn.disabled=on;}
-function updateTimer(){var m=Math.floor(countdown/60),s=countdown%60;document.getElementById("timer-txt").textContent=scanning?"LIVE":(m+":"+(s<10?"0":"")+s);document.getElementById("fill").style.width=(scanning?100:((300-countdown)/300*100))+"%";}
-function updateStats(){document.getElementById("s-total").textContent=alerts.length;document.getElementById("s-crit").textContent=alerts.filter(function(a){return a.urgency==="Critical";}).length;document.getElementById("s-high").textContent=alerts.filter(function(a){return a.urgency==="High";}).length;document.getElementById("s-10p").textContent=alerts.filter(function(a){return(a.estimatedUpside||0)>=10;}).length;}
-function updateBell(){var b=document.getElementById("bell-badge");b.style.display=unread>0?"flex":"none";b.textContent=unread>9?"9+":unread;}
-function getFiltered(){if(activeFilter==="critical")return alerts.filter(function(a){return a.urgency==="Critical";});if(activeFilter==="high")return alerts.filter(function(a){return a.urgency==="Critical"||a.urgency==="High";});if(activeFilter==="10plus")return alerts.filter(function(a){return(a.estimatedUpside||0)>=10;});return alerts;}
-function renderFeed(){
-  var feed=document.getElementById("feed"),filtered=getFiltered();
-  document.getElementById("fcount").textContent=filtered.length+" RESULT"+(filtered.length!==1?"S":"");
-  if(alerts.length===0){feed.innerHTML='<div class="empty-box"><div class="empty-icon">'+(scanning?"":"📡")+'</div><div class="'+(scanning?"scanning-title":"empty-title")+'">'+(scanning?"SCANNING LIVE MARKETS":"AWAITING SIGNALS")+'</div><div class="empty-sub">'+(scanning?"Searching all stocks for 5%+ catalysts...":"Enter your API key above and click SAVE &amp; SCAN")+'</div></div>';return;}
-  if(filtered.length===0){feed.innerHTML='<div class="empty-box"><div class="empty-title">NO RESULTS FOR THIS FILTER</div></div>';return;}
-  var html="";
-  for(var i=0;i<filtered.length;i++){
-    var a=filtered[i],urg=URGENCY_COLORS[a.urgency]||URGENCY_COLORS.Medium,cc=CATALYST_COLORS[a.catalystType]||"#334155",conf=a.confidence||0,confColor=conf>=80?"#00ff88":conf>=65?"#ffd60a":"#ff9500";
-    var srcHtml=a.source?'<div class="dsource"><div class="dsource-lbl">SOURCE</div><div class="dsource-name">'+(a.sourceName||"Unknown")+(a.newsTime?" · "+a.newsTime:"")+'</div><a class="dsource-link" href="'+a.source+'" target="_blank">🔗 Verify this story →</a></div>':"";
-    html+='<div class="acard'+(a.urgency==="Critical"?" critical-card":"")+(a.isNew?" newin":"")+'" style="border-left-color:'+urg.c+'" onclick="toggleCard(\''+a.id+'\')"><div class="cbody"><div class="crow"><div class="ticker-box"><div class="tsym">'+a.ticker+'</div><div class="tco">'+(a.company||"").split(" ").slice(0,2).join(" ")+'</div></div><div class="cmid"><div class="badges">';
-    if(a.isNew)html+='<span class="bnew">NEW</span>';
-    html+='<span class="burg" style="color:'+urg.c+';border-color:'+urg.c+';background:'+urg.bg+'">'+(a.urgency||"").toUpperCase()+'</span><span class="bcat" style="color:'+cc+';border-color:'+cc+'44;background:'+cc+'0d">'+(a.catalystType||"")+'</span><span class="btime" style="color:#1a3a5c;border-color:#0f1923">⏱ '+(a.timeframe||"")+'</span></div><div class="chl">'+(a.headline||"")+'</div></div><div class="upbox"><div class="upnum">+'+(a.estimatedUpside||0)+'%</div><div class="uplbl">EST UPSIDE</div></div></div><div class="conf-row"><div class="ctrack"><div class="cfill" style="width:'+conf+'%;background:'+confColor+'"></div></div><span class="clbl">'+conf+'% CONF</span><span class="arrow" id="arrow-'+a.id+'">▼</span></div></div><div class="detail" id="detail-'+a.id+'" onclick="event.stopPropagation()"><div class="dlbl">WHAT HAPPENED</div><div class="dtxt">'+(a.summary||"")+'</div><div class="dreason" style="border-left-color:'+cc+'"><div class="dlbl">WHY 5%+ MOVE</div><div class="dtxt">'+(a.reasoning||"")+'</div></div><div class="dmeta"><span>TICKER <span>'+a.ticker+'</span></span><span>DETECTED <span>'+(a.ts?new Date(a.ts).toLocaleTimeString():"")+'</span></span></div>'+srcHtml+'</div></div>';
-  }
-  feed.innerHTML=html;
-}
-function toggleCard(id){var d=document.getElementById("detail-"+id),ar=document.getElementById("arrow-"+id);if(!d)return;var o=d.classList.toggle("open");ar.textContent=o?"▲":"▼";}
-function setFilter(f){activeFilter=f;["all","crit","high","10p"].forEach(function(x){document.getElementById("f-"+x).classList.remove("on");});var map={all:"f-all",critical:"f-crit",high:"f-high","10plus":"f-10p"};if(map[f])document.getElementById(map[f]).classList.add("on");renderFeed();}
-
-/* INIT */
 setInterval(function(){if(!scanning){countdown--;if(countdown<=0){countdown=300;runScan();}}updateTimer();},1000);
 setInterval(autoCheckPending,60*1000);
 setInterval(function(){if(activeTab==="tracker")renderPredList();},30*1000);
 
-document.getElementById("save-btn").addEventListener("click",function(){var raw=document.getElementById("api-key-input").value.trim();if(raw&&!raw.includes("••"))setKey(raw);runScan();});
+document.getElementById("save-btn").addEventListener("click",function(){var url=document.getElementById("api-url").value.trim();if(!url){alert("Please enter your backend URL");return;}localStorage.setItem("signal_url",url);runScan();});
 document.getElementById("scan-btn").addEventListener("click",function(){runScan();});
 document.getElementById("bell").addEventListener("click",function(){unread=0;updateBell();});
 document.getElementById("f-all").addEventListener("click",function(){setFilter("all");});
@@ -475,9 +386,11 @@ document.getElementById("f-high").addEventListener("click",function(){setFilter(
 document.getElementById("f-10p").addEventListener("click",function(){setFilter("10plus");});
 
 (function(){
-  loadPredictions();updateKeyStatus();updateTrackerBadge();renderAccuracy();renderPredList();
+  var saved=localStorage.getItem("signal_url")||"https://signal-3.vercel.app/api/scan";
+  document.getElementById("api-url").value=saved;
+  loadPredictions();updateTrackerBadge();renderAccuracy();renderPredList();
   if(window.Notification&&Notification.permission==="default")Notification.requestPermission();
-  if(getKey())runScan();
+  runScan();
 })();
 </script>
 </body>
