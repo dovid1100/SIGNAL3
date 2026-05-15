@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SIGNAL — AI Market Alert System</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#040407;color:#e2e8f0;font-family:'IBM Plex Mono','Courier New',monospace;min-height:100vh}
+  ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
+
+  /* ── CONFIG BANNER ─────────────────────────────────────────── */
+  #config-banner{background:#0a0f1a;border-bottom:1px solid #ff2d5540;padding:10px 20px;display:flex;align-items:center;gap:12px;font-size:11px}
+  #config-banner input{flex:1;background:#05080d;border:1px solid #1e293b;color:#e2e8f0;padding:6px 10px;font-family:inherit;font-size:11px;outline:none}
+  #config-banner input:focus{border-color:#00ff88}
+  #config-banner button{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:#00ff88;padding:6px 14px;font-family:inherit;font-size:10px;letter-spacing:.1em;cursor:pointer}
+  #config-banner label{color:#475569;font-size:10px;letter-spacing:.1em;white-space:nowrap}
+
+  /* ── HEADER ─────────────────────────────────────────────────── */
+  header{border-bottom:1px solid #0a1220;padding:0 20px;background:#040407;position:sticky;top:0;z-index:50}
+  .header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:52px}
+  .logo{display:flex;align-items:center;gap:10px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#00ff88;box-shadow:0 0 10px #00ff88;transition:all .3s}
+  .dot.scanning{background:#f59e0b;box-shadow:0 0 10px #f59e0b;animation:blink 1s step-end infinite}
+  .logo-text{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.2em;color:#fff}
+  .logo-sub{font-size:7px;color:#1a3a5c;letter-spacing:.14em}
+  .header-right{display:flex;align-items:center;gap:16px}
+  .timer-wrap{display:flex;flex-direction:column;gap:3px}
+  .timer-labels{display:flex;justify-content:space-between;font-size:7px;letter-spacing:.1em}
+  .timer-labels span:first-child{color:#1a3a5c}
+  .timer-labels span:last-child{color:#334155}
+  .track{height:2px;background:#0a1220;border-radius:1px;overflow:hidden;width:90px}
+  .fill{height:100%;border-radius:1px;background:linear-gradient(90deg,#00ff88,#00d4ff);box-shadow:0 0 6px rgba(0,255,136,.5);transition:width 1s linear}
+  .scan-btn{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.3);color:#00ff88;padding:5px 14px;font-family:inherit;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+  .scan-btn:disabled{color:#334155;border-color:#0a1220;cursor:not-allowed}
+  .bell{position:relative;cursor:pointer;font-size:15px;line-height:1}
+  .bell-badge{position:absolute;top:-5px;right:-5px;background:#ff2d55;color:#fff;border-radius:50%;width:14px;height:14px;font-size:7px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid #040407}
+
+  /* ── MAIN ───────────────────────────────────────────────────── */
+  main{max-width:1100px;margin:0 auto;padding:18px}
+
+  /* ── STATS ──────────────────────────────────────────────────── */
+  .stats{display:flex;gap:6px;margin-bottom:14px}
+  .stat{flex:1;background:#05080d;border:1px solid #111c2a;padding:13px 15px}
+  .stat-label{font-size:7px;color:#1a3a5c;letter-spacing:.14em;margin-bottom:6px}
+  .stat-value{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1}
+
+  /* ── STATUS BAR ─────────────────────────────────────────────── */
+  .status-bar{background:#05080d;border:1px solid #111c2a;padding:6px 13px;margin-bottom:13px;display:flex;gap:10px;font-size:7px;color:#1a3a5c;letter-spacing:.08em;flex-wrap:wrap}
+  .status-bar .dot-sep{color:#111c2a}
+
+  /* ── FILTERS ────────────────────────────────────────────────── */
+  .filters{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+  .fbtn{background:transparent;border:1px solid #1a2535;color:#475569;padding:5px 13px;font-family:inherit;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+  .fbtn:hover{border-color:#2d3f55;color:#94a3b8}
+  .fbtn.on{border-color:#00ff88;color:#00ff88;background:rgba(0,255,136,.06)}
+  .filter-count{flex:1;text-align:right;font-size:7px;color:#111c2a;letter-spacing:.1em;align-self:center}
+
+  /* ── ALERT CARDS ────────────────────────────────────────────── */
+  .feed{display:flex;flex-direction:column;gap:5px}
+  .empty{background:#05080d;border:1px solid #111c2a;padding:50px;text-align:center}
+  .empty-icon{font-size:36px;margin-bottom:14px;opacity:.5}
+  .empty-title{font-size:9px;color:#1a3a5c;letter-spacing:.25em;margin-bottom:8px}
+  .empty-sub{font-size:7px;color:#0f1923}
+  .scanning-msg{font-size:9px;color:#1a3a5c;letter-spacing:.25em;margin-bottom:9px;animation:glow 2s ease infinite}
+
+  .alert-card{border:1px solid #111c2a;background:#05080d;cursor:pointer;transition:border-color .2s,transform .15s;position:relative;overflow:hidden;border-left-width:3px}
+  .alert-card:hover{border-color:#1e3a55;transform:translateX(3px)}
+  .alert-card.new-in{animation:slide-in .3s ease}
+  .alert-card.critical{animation:ring 2s ease infinite}
+
+  .card-body{padding:13px 15px}
+  .card-row{display:flex;align-items:flex-start;gap:11px;margin-bottom:9px}
+
+  .ticker-box{background:rgba(255,255,255,.025);border:1px solid #0f1923;padding:5px 9px;min-width:60px;text-align:center;flex-shrink:0}
+  .ticker-sym{font-size:15px;font-weight:700;color:#fff;line-height:1}
+  .ticker-co{font-size:6px;color:#1a3a5c;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .card-mid{flex:1;min-width:0}
+  .badges{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:5px}
+  .badge-new{background:#00ff88;color:#000;font-size:6px;font-weight:800;padding:1px 5px}
+  .badge-urgency,.badge-cat,.badge-time{font-size:6px;padding:1px 5px;border:1px solid}
+  .card-headline{font-size:12px;color:#cbd5e1;line-height:1.45;font-weight:500}
+
+  .upside-box{text-align:right;flex-shrink:0}
+  .upside-num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#00ff88;line-height:1}
+  .upside-label{font-size:6px;color:#1a3a5c;margin-top:2px}
+
+  .conf-row{display:flex;align-items:center;gap:8px}
+  .conf-track{flex:1;height:2px;background:#0a1220;border-radius:1px;overflow:hidden}
+  .conf-fill{height:100%;border-radius:1px;transition:width .5s}
+  .conf-label{font-size:7px;color:#1a3a5c;flex-shrink:0}
+  .expand-arrow{font-size:7px;color:#111c2a}
+
+  .card-detail{border-top:1px solid #0a1220;padding:13px 15px;background:rgba(0,0,0,.3);display:none}
+  .card-detail.open{display:block}
+  .detail-section{margin-bottom:12px}
+  .detail-label{font-size:7px;color:#1a3a5c;letter-spacing:.14em;margin-bottom:6px}
+  .detail-text{font-size:11px;color:#94a3b8;line-height:1.75}
+  .detail-reasoning{border-left:2px solid;padding-left:11px}
+  .detail-reasoning .detail-text{color:#cbd5e1}
+  .detail-meta{display:flex;gap:12px;font-size:7px;color:#111c2a;flex-wrap:wrap}
+  .detail-meta span span{color:#334155}
+
+  /* ── SCAN LOG ───────────────────────────────────────────────── */
+  .log-section{margin-top:20px;border-top:1px solid #0a1220;padding-top:14px}
+  .log-title{font-size:7px;color:#111c2a;letter-spacing:.2em;margin-bottom:8px}
+  .log-row{display:flex;gap:8px;font-size:7.5px;padding:3px 0;border-bottom:1px solid rgba(10,18,32,.8)}
+  .log-time{color:#1a2535;flex-shrink:0;min-width:70px}
+  .log-sep{color:#0f1923}
+  .log-msg{word-break:break-all;line-height:1.5}
+  .log-msg.info{color:#f59e0b}
+  .log-msg.found{color:#00ff88}
+  .log-msg.clear{color:#334155}
+  .log-msg.error{color:#ff2d55}
+
+  .footer{margin-top:20px;text-align:center;font-size:7px;color:#0a1220;letter-spacing:.14em}
+
+  /* ── ANIMATIONS ─────────────────────────────────────────────── */
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  @keyframes slide-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-7deg)}80%{transform:rotate(7deg)}}
+  @keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,45,85,.5)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+  @keyframes glow{0%,100%{opacity:.4}50%{opacity:1}}
+  .shake{animation:shake .6s ease}
+</style>
+</head>
+<body>
+
+<!-- CONFIG BANNER -->
+<div id="config-banner">
+  <label>BACKEND URL:</label>
+  <input type="text" id="api-url" placeholder="https://your-signal-backend.vercel.app/api/scan" />
+  <button onclick="saveUrl()">SAVE & SCAN</button>
+  <span style="color:#334155;font-size:9px">↑ Paste your Vercel URL here after deploying the backend</span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="dot" id="status-dot"></div>
+      <span class="logo-text">SIGNAL</span>
+      <span class="logo-sub">AI MARKET INTELLIGENCE</span>
+    </div>
+    <div class="header-right">
+      <div class="timer-wrap">
+        <div class="timer-labels">
+          <span>NEXT SCAN</span>
+          <span id="timer-display">5:00</span>
+        </div>
+        <div class="track"><div class="fill" id="timer-fill" style="width:0%"></div></div>
+      </div>
+      <button class="scan-btn" id="scan-btn" onclick="runScan()">SCAN NOW</button>
+      <div class="bell" id="bell" onclick="clearUnread()">
+        🔔
+        <div class="bell-badge" id="bell-badge" style="display:none">0</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="stat-label">TOTAL SIGNALS</div><div class="stat-value" id="stat-total" style="color:#cbd5e1">0</div></div>
+    <div class="stat"><div class="stat-label">CRITICAL</div><div class="stat-value" id="stat-critical" style="color:#ff2d55">0</div></div>
+    <div class="stat"><div class="stat-label">HIGH URGENCY</div><div class="stat-value" id="stat-high" style="color:#ff9500">0</div></div>
+    <div class="stat"><div class="stat-label">10%+ UPSIDE</div><div class="stat-value" id="stat-10plus" style="color:#00ff88">0</div></div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="status-bar" style="display:none">
+    <span>LAST SCAN</span>
+    <span id="last-time" style="color:#334155"></span>
+    <span class="dot-sep">·</span>
+    <span id="last-analyzed"></span>
+    <span class="dot-sep">·</span>
+    <span id="last-found"></span>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="fbtn on" onclick="setFilter('all',this)">All Signals</button>
+    <button class="fbtn" onclick="setFilter('critical',this)">Critical Only</button>
+    <button class="fbtn" onclick="setFilter('high',this)">High+ Urgency</button>
+    <button class="fbtn" onclick="setFilter('10plus',this)">10%+ Upside</button>
+    <div class="filter-count" id="filter-count">0 RESULTS</div>
+  </div>
+
+  <!-- FEED -->
+  <div class="feed" id="feed">
+    <div class="empty" id="empty-state">
+      <div class="empty-icon">📡</div>
+      <div class="empty-title">AWAITING SIGNALS</div>
+      <div class="empty-sub">Enter your backend URL above and click SAVE & SCAN</div>
+    </div>
+  </div>
+
+  <!-- SCAN LOG -->
+  <div class="log-section" id="log-section" style="display:none">
+    <div class="log-title">DIAGNOSTIC LOG</div>
+    <div id="log-rows"></div>
+  </div>
+
+  <div class="footer">SIGNAL v5.0 · FOR INFORMATIONAL PURPOSES ONLY · NOT FINANCIAL ADVICE</div>
+</main>
+
+<script>
+const CATALYST_COLORS = {
+  "Earnings Beat":"#00ff88","M&A Deal":"#00d4ff","FDA Approval":"#ff6b35",
+  "Contract Win":"#ffd700","Analyst Upgrade":"#a78bfa","Regulatory Win":"#34d399",
+  "Macro Tailwind":"#60a5fa","Short Squeeze":"#f472b6","Guidance Raise":"#4ade80"
+};
+const URGENCY = {
+  Critical:{color:"#ff2d55",bg:"rgba(255,45,85,0.15)"},
+  High:{color:"#ff9500",bg:"rgba(255,149,0,0.12)"},
+  Medium:{color:"#ffd60a",bg:"rgba(255,214,10,0.10)"}
+};
+
+let alerts = [];
+let filter = "all";
+let countdown = 300;
+let timerInterval = null;
+let scanning = false;
+let unread = 0;
+let seenKeys = new Set();
+
+// ── URL STORAGE ───────────────────────────────────────────────
+function getApiUrl() {
+  return localStorage.getItem("signal_api_url") || "https://signal-3.vercel.app/api/scan";
+}
+function saveUrl() {
+  const url = document.getElementById("api-url").value.trim();
+  if (!url) return alert("Please enter your Vercel backend URL");
+  localStorage.setItem("signal_api_url", url);
+  runScan();
+}
+window.addEventListener("load", () => {
+  const saved = getApiUrl();
+  if (saved) document.getElementById("api-url").value = saved;
+  startCountdown();
+  if (saved) runScan();
+});
+
+// ── COUNTDOWN ─────────────────────────────────────────────────
+function startCountdown() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) { countdown = 300; runScan(); }
+    updateTimerUI();
+  }, 1000);
+}
+function updateTimerUI() {
+  const m = Math.floor(countdown / 60);
+  const s = String(countdown % 60).padStart(2, "0");
+  document.getElementById("timer-display").textContent = scanning ? "LIVE" : `${m}:${s}`;
+  const pct = ((300 - countdown) / 300) * 100;
+  document.getElementById("timer-fill").style.width = (scanning ? 100 : pct) + "%";
+}
+
+// ── SCAN ──────────────────────────────────────────────────────
+async function runScan() {
+  const url = getApiUrl();
+  if (!url) {
+    pushLog("error", "No backend URL set. Enter your Vercel URL above and click SAVE & SCAN.");
+    return;
+  }
+  if (scanning) return;
+  scanning = true;
+  countdown = 300;
+  setScanning(true);
+  pushLog("info", "Initiating market scan...");
+
+  try {
+    const res = await fetch(url, { method: "POST", headers: {"Content-Type":"application/json"}, body: "{}" });
+    pushLog("info", `HTTP ${res.status} ${res.statusText}`);
+
+    if (!res.ok) {
+      const txt = await res.text();
+      pushLog("error", `Server error: ${txt.slice(0,200)}`);
+      return;
+    }
+
+    const data = await res.json();
+    if (data.error) { pushLog("error", `API error: ${data.error}`); return; }
+
+    const fresh = (data.alerts || []).filter(a => {
+      if (!a?.ticker) return false;
+      const k = `${a.ticker}|${a.headline}`;
+      if (seenKeys.has(k)) return false;
+      seenKeys.add(k);
+      return true;
+    }).map(a => ({ ...a, id: `${a.ticker}-${Date.now()}-${Math.random()}`, ts: new Date() }));
+
+    if (fresh.length > 0) {
+      alerts = [...fresh, ...alerts].slice(0, 50);
+      unread += fresh.length;
+      updateBell();
+      shakeBell();
+    }
+
+    updateStats();
+    renderFeed();
+    updateStatusBar(data.storiesAnalyzed || 0, fresh.length);
+    pushLog(fresh.length > 0 ? "found" : "clear",
+      fresh.length > 0 ? `✓ ${fresh.length} signal(s) found — ${data.storiesAnalyzed||0} stories analyzed`
+                       : `No qualifying signals — ${data.storiesAnalyzed||0} stories analyzed`);
+  } catch (err) {
+    pushLog("error", `Exception: ${err.message}`);
+  } finally {
+    scanning = false;
+    setScanning(false);
+  }
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────
+function setScanning(on) {
+  document.getElementById("status-dot").className = on ? "dot scanning" : "dot";
+  document.getElementById("scan-btn").disabled = on;
+  document.getElementById("scan-btn").textContent = on ? "SCANNING" : "SCAN NOW";
+}
+function updateBell() {
+  const badge = document.getElementById("bell-badge");
+  if (unread > 0) {
+    badge.style.display = "flex";
+    badge.textContent = unread > 9 ? "9+" : unread;
+  } else {
+    badge.style.display = "none";
+  }
+}
+function clearUnread() { unread = 0; updateBell(); }
+function shakeBell() {
+  const b = document.getElementById("bell");
+  b.classList.add("shake");
+  setTimeout(() => b.classList.remove("shake"), 700);
+}
+function updateStats() {
+  document.getElementById("stat-total").textContent = alerts.length;
+  document.getElementById("stat-critical").textContent = alerts.filter(a=>a.urgency==="Critical").length;
+  document.getElementById("stat-high").textContent = alerts.filter(a=>a.urgency==="High").length;
+  document.getElementById("stat-10plus").textContent = alerts.filter(a=>(a.estimatedUpside||0)>=10).length;
+}
+function updateStatusBar(analyzed, found) {
+  const bar = document.getElementById("status-bar");
+  bar.style.display = "flex";
+  document.getElementById("last-time").textContent = new Date().toLocaleTimeString();
+  document.getElementById("last-analyzed").textContent = `${analyzed} stories analyzed`;
+  const f = document.getElementById("last-found");
+  f.textContent = found > 0 ? `${found} signal(s) found` : "no qualifying signals";
+  f.style.color = found > 0 ? "#00ff88" : "#1a3a5c";
+}
+function setFilter(f, btn) {
+  filter = f;
+  document.querySelectorAll(".fbtn").forEach(b => b.classList.remove("on"));
+  btn.classList.add("on");
+  renderFeed();
+}
+function getFiltered() {
+  if (filter === "critical") return alerts.filter(a=>a.urgency==="Critical");
+  if (filter === "high") return alerts.filter(a=>a.urgency==="Critical"||a.urgency==="High");
+  if (filter === "10plus") return alerts.filter(a=>(a.estimatedUpside||0)>=10);
+  return alerts;
+}
+
+// ── RENDER FEED ───────────────────────────────────────────────
+function renderFeed() {
+  const feed = document.getElementById("feed");
+  const filtered = getFiltered();
+  document.getElementById("filter-count").textContent = `${filtered.length} RESULT${filtered.length!==1?"S":""}`;
+
+  if (alerts.length === 0) {
+    feed.innerHTML = `<div class="empty" id="empty-state">
+      <div class="empty-icon">${scanning?"":"📡"}</div>
+      <div class="${scanning?"scanning-msg":"empty-title"}">${scanning?"SCANNING LIVE MARKETS":"AWAITING SIGNALS"}</div>
+      <div class="empty-sub">${scanning?"Searching Reuters · Bloomberg · CNBC · MarketWatch...":"Enter your backend URL above and click SAVE & SCAN"}</div>
+    </div>`;
+    return;
+  }
+
+  if (filtered.length === 0) {
+    feed.innerHTML = `<div class="empty"><div class="empty-title">NO RESULTS FOR THIS FILTER</div></div>`;
+    return;
+  }
+
+  feed.innerHTML = filtered.map(a => {
+    const urg = URGENCY[a.urgency] || URGENCY.Medium;
+    const cc = CATALYST_COLORS[a.catalystType] || "#334155";
+    const confColor = (a.confidence||0) >= 80 ? "#00ff88" : (a.confidence||0) >= 65 ? "#ffd60a" : "#ff9500";
+    return `
+    <div class="alert-card ${a.urgency==="Critical"?"critical":""}" 
+         style="border-left-color:${urg.color}"
+         id="card-${a.id}"
+         onclick="toggleCard('${a.id}')">
+      <div class="card-body">
+        <div class="card-row">
+          <div class="ticker-box">
+            <div class="ticker-sym">${a.ticker}</div>
+            <div class="ticker-co">${(a.company||"").split(" ").slice(0,2).join(" ")}</div>
+          </div>
+          <div class="card-mid">
+            <div class="badges">
+              <span class="badge-urgency" style="color:${urg.color};border-color:${urg.color};background:${urg.bg}">${(a.urgency||"").toUpperCase()}</span>
+              <span class="badge-cat" style="color:${cc};border-color:${cc}44;background:${cc}0d">${a.catalystType||""}</span>
+              <span class="badge-time" style="color:#1a3a5c;border-color:#0f1923">⏱ ${a.timeframe||""}</span>
+            </div>
+            <div class="card-headline">${a.headline||""}</div>
+          </div>
+          <div class="upside-box">
+            <div class="upside-num">+${a.estimatedUpside||0}%</div>
+            <div class="upside-label">EST UPSIDE</div>
+          </div>
+        </div>
+        <div class="conf-row">
+          <div class="conf-track"><div class="conf-fill" style="width:${a.confidence||0}%;background:${confColor}"></div></div>
+          <span class="conf-label">${a.confidence||0}% CONF</span>
+          <span class="expand-arrow" id="arrow-${a.id}">▼</span>
+        </div>
+      </div>
+      <div class="card-detail" id="detail-${a.id}">
+        <div class="detail-section">
+          <div class="detail-label">WHAT HAPPENED</div>
+          <div class="detail-text">${a.summary||""}</div>
+        </div>
+        <div class="detail-section detail-reasoning" style="border-left-color:${cc}">
+          <div class="detail-label">WHY 5%+ MOVE</div>
+          <div class="detail-text">${a.reasoning||""}</div>
+        </div>
+        <div class="detail-meta">
+          <span>TICKER <span>${a.ticker}</span></span>
+          <span>COMPANY <span>${a.company||""}</span></span>
+          <span>DETECTED <span>${a.ts?.toLocaleTimeString()||""}</span></span>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleCard(id) {
+  const detail = document.getElementById(`detail-${id}`);
+  const arrow = document.getElementById(`arrow-${id}`);
+  const isOpen = detail.classList.toggle("open");
+  arrow.textContent = isOpen ? "▲" : "▼";
+}
+
+// ── LOG ───────────────────────────────────────────────────────
+function pushLog(status, msg) {
+  const section = document.getElementById("log-section");
+  section.style.display = "block";
+  const row = document.createElement("div");
+  row.className = "log-row";
+  row.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString()}</span><span class="log-sep">›</span><span class="log-msg ${status}">${msg}</span>`;
+  const rows = document.getElementById("log-rows");
+  rows.insertBefore(row, rows.firstChild);
+  // Keep max 15
+  while (rows.children.length > 15) rows.removeChild(rows.lastChild);
+}
+</script>
+</body>
+</html>
