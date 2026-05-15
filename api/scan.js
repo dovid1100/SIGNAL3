@@ -4,18 +4,64 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const PROMPT = `You are SIGNAL, an elite stock market intelligence AI. Search the web RIGHT NOW for breaking financial news from the last 2 hours and identify stocks with a genuine catalyst for a 5%+ upward move.
+const PROMPT = `You are SIGNAL, an elite stock market intelligence AI. Search the web RIGHT NOW for breaking financial news from the last 2 hours.
 
-Look for: Earnings beats, raised guidance, M&A deals, FDA approvals, major contract wins, analyst upgrades, regulatory wins.
+You must search for ALL types of stocks including:
+- Large cap stocks (S&P 500)
+- Mid cap stocks
+- Small cap stocks
+- Micro cap stocks
+- Penny stocks (even under $5)
+- Biotech and pharma stocks of any size
+- Any stock with a genuine catalyst
 
-EXCLUDE: crypto, meme stocks, penny stocks under $5.
+DO NOT exclude any stock based on price or market cap.
+ONLY exclude: cryptocurrency, crypto tokens, crypto ETFs.
 
-Return ONLY raw JSON no markdown:
-{"alerts":[{"ticker":"NVDA","company":"NVIDIA Corporation","headline":"Short headline max 10 words","estimatedUpside":12,"catalystType":"Earnings Beat","urgency":"Critical","timeframe":"hours","summary":"2-3 sentences.","reasoning":"Why this causes 5%+ move.","confidence":85}],"storiesAnalyzed":14}
+Search for these specific catalysts:
+1. FDA approvals, drug trial results, clinical trial data
+2. Earnings beats with EPS surprises
+3. Raised guidance
+4. M&A acquisitions at a premium
+5. Major contract wins
+6. Analyst upgrades with price target increases
+7. Short squeeze setups with real catalysts
+8. Regulatory approvals
+9. Small cap breakouts on high volume
+10. Biotech catalyst events
 
-catalystType: Earnings Beat, M&A Deal, FDA Approval, Contract Win, Analyst Upgrade, Regulatory Win, Macro Tailwind, Short Squeeze, Guidance Raise
+For EACH alert you find, you MUST include:
+- The exact source URL where you found this news
+- The publication name
+- The approximate time the news was published
+
+Return ONLY a raw JSON object, no markdown, no explanation:
+{
+  "alerts": [
+    {
+      "ticker": "HCWB",
+      "company": "HCW Biologics Inc",
+      "headline": "Short headline max 10 words",
+      "estimatedUpside": 25,
+      "catalystType": "FDA Approval",
+      "urgency": "Critical",
+      "timeframe": "hours",
+      "summary": "2-3 sentences explaining exactly what happened.",
+      "reasoning": "Why this specifically causes a 5%+ move.",
+      "confidence": 85,
+      "source": "https://www.reuters.com/article/exact-url-here",
+      "sourceName": "Reuters",
+      "newsTime": "Today at 9:45 AM ET"
+    }
+  ],
+  "storiesAnalyzed": 20
+}
+
+catalystType: Earnings Beat, M&A Deal, FDA Approval, Contract Win, Analyst Upgrade, Regulatory Win, Macro Tailwind, Short Squeeze, Guidance Raise, Clinical Trial, Biotech Catalyst
 urgency: Critical, High, Medium
 timeframe: hours, days, weeks
+
+IMPORTANT: Every single alert MUST have a real source URL. If you cannot find a real URL for a story, do not include that alert.
 
 If nothing qualifies: {"alerts":[],"storiesAnalyzed":10}`;
 
@@ -37,8 +83,8 @@ export default async function handler(req, res) {
   try {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 3000,
-      tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }],
+      max_tokens: 4000,
+      tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 8 }],
       messages: [{ role: "user", content: PROMPT }],
     });
 
