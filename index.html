@@ -240,6 +240,7 @@ function saveUrl() {
 window.addEventListener("load", () => {
   const saved = getApiUrl();
   if (saved) document.getElementById("api-url").value = saved;
+  requestNotifications();
   startCountdown();
   if (saved) runScan();
 });
@@ -300,6 +301,11 @@ async function runScan() {
       unread += fresh.length;
       updateBell();
       shakeBell();
+      sendNotification(
+        'SIGNAL: ' + fresh.length + ' new alert' + (fresh.length > 1 ? 's' : ''),
+        fresh.map(a => a.ticker + ' +' + a.estimatedUpside + '% — ' + a.headline).join('
+')
+      );
     }
 
     updateStats();
@@ -332,6 +338,18 @@ function updateBell() {
   }
 }
 function clearUnread() { unread = 0; updateBell(); }
+function requestNotifications() {
+  if ("Notification" in window) {
+    Notification.requestPermission();
+  }
+}
+
+function sendNotification(title, body) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification(title, { body: body });
+  }
+}
+
 function shakeBell() {
   const b = document.getElementById("bell");
   b.classList.add("shake");
@@ -433,6 +451,11 @@ function renderFeed() {
           <span>COMPANY <span>${a.company||""}</span></span>
           <span>DETECTED <span>${a.ts?.toLocaleTimeString()||""}</span></span>
         </div>
+        ${a.source ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #0a1220">
+          <div style="font-size:7px;color:#1a3a5c;letter-spacing:.14em;margin-bottom:6px">SOURCE</div>
+          <div style="font-size:11px;color:#475569;margin-bottom:4px">${a.sourceName||"Unknown"} ${a.newsTime ? "· " + a.newsTime : ""}</div>
+          <a href="${a.source}" target="_blank" style="font-size:11px;color:#00d4ff;word-break:break-all;text-decoration:none">🔗 Verify this story →</a>
+        </div>` : ""}
       </div>
     </div>`;
   }).join("");
@@ -460,3 +483,4 @@ function pushLog(status, msg) {
 </script>
 </body>
 </html>
+
