@@ -1,5 +1,4 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -7,330 +6,821 @@
 <title>SIGNAL — AI Market Alert System</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#040407;color:#e2e8f0;font-family:'IBM Plex Mono','Courier New',monospace;min-height:100vh}
-  ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#040407;color:#e2e8f0;font-family:'IBM Plex Mono','Courier New',monospace;min-height:100vh}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
 
-  /* ── CONFIG BANNER ─────────────────────────────────────────── */
-  #config-banner{background:#0a0f1a;border-bottom:1px solid #ff2d5540;padding:10px 20px;display:flex;align-items:center;gap:12px;font-size:11px}
-  #config-banner input{flex:1;background:#05080d;border:1px solid #1e293b;color:#e2e8f0;padding:6px 10px;font-family:inherit;font-size:11px;outline:none}
-  #config-banner input:focus{border-color:#00ff88}
-  #config-banner button{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:#00ff88;padding:6px 14px;font-family:inherit;font-size:10px;letter-spacing:.1em;cursor:pointer}
-  #config-banner label{color:#475569;font-size:10px;letter-spacing:.1em;white-space:nowrap}
+#config-banner{background:#0a0f1a;border-bottom:1px solid #ff2d5540;padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#config-banner input{flex:1;min-width:200px;background:#05080d;border:1px solid #1e293b;color:#e2e8f0;padding:7px 10px;font-family:inherit;font-size:11px;outline:none;border-radius:2px}
+#config-banner input:focus{border-color:#00ff88}
+#config-banner button{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.4);color:#00ff88;padding:7px 16px;font-family:inherit;font-size:10px;letter-spacing:.1em;cursor:pointer;white-space:nowrap}
+#config-label{color:#475569;font-size:9px;letter-spacing:.1em;white-space:nowrap}
 
-  /* ── HEADER ─────────────────────────────────────────────────── */
-  header{border-bottom:1px solid #0a1220;padding:0 20px;background:#040407;position:sticky;top:0;z-index:50}
-  .header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:52px}
-  .logo{display:flex;align-items:center;gap:10px}
-  .dot{width:7px;height:7px;border-radius:50%;background:#00ff88;box-shadow:0 0 10px #00ff88;transition:all .3s}
-  .dot.scanning{background:#f59e0b;box-shadow:0 0 10px #f59e0b;animation:blink 1s step-end infinite}
-  .logo-text{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.2em;color:#fff}
-  .logo-sub{font-size:7px;color:#1a3a5c;letter-spacing:.14em}
-  .header-right{display:flex;align-items:center;gap:16px}
-  .timer-wrap{display:flex;flex-direction:column;gap:3px}
-  .timer-labels{display:flex;justify-content:space-between;font-size:7px;letter-spacing:.1em}
-  .timer-labels span:first-child{color:#1a3a5c}
-  .timer-labels span:last-child{color:#334155}
-  .track{height:2px;background:#0a1220;border-radius:1px;overflow:hidden;width:90px}
-  .fill{height:100%;border-radius:1px;background:linear-gradient(90deg,#00ff88,#00d4ff);box-shadow:0 0 6px rgba(0,255,136,.5);transition:width 1s linear}
-  .scan-btn{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.3);color:#00ff88;padding:5px 14px;font-family:inherit;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .15s}
-  .scan-btn:disabled{color:#334155;border-color:#0a1220;cursor:not-allowed}
-  .bell{position:relative;cursor:pointer;font-size:15px;line-height:1}
-  .bell-badge{position:absolute;top:-5px;right:-5px;background:#ff2d55;color:#fff;border-radius:50%;width:14px;height:14px;font-size:7px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid #040407}
+header{border-bottom:1px solid #0a1220;padding:0 16px;background:#040407;position:sticky;top:0;z-index:50}
+.hdr{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:50px}
+.logo{display:flex;align-items:center;gap:10px}
+.dot{width:7px;height:7px;border-radius:50%;background:#00ff88;box-shadow:0 0 10px #00ff88}
+.dot.on{background:#f59e0b;box-shadow:0 0 10px #f59e0b;animation:blink 1s step-end infinite}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:.2em;color:#fff}
+.logo-sub{font-size:7px;color:#1a3a5c;letter-spacing:.12em}
+.hdr-right{display:flex;align-items:center;gap:14px}
+.timer-wrap{display:flex;flex-direction:column;gap:3px}
+.timer-top{display:flex;justify-content:space-between;font-size:7px;letter-spacing:.1em}
+.timer-top span:first-child{color:#1a3a5c}
+.timer-top span:last-child{color:#334155}
+.track{height:2px;background:#0a1220;border-radius:1px;overflow:hidden;width:88px}
+.fill{height:100%;border-radius:1px;background:linear-gradient(90deg,#00ff88,#00d4ff);box-shadow:0 0 6px rgba(0,255,136,.5);transition:width 1s linear}
+.scan-btn{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.3);color:#00ff88;padding:5px 13px;font-family:inherit;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.scan-btn:disabled{color:#334155;border-color:#0a1220;cursor:not-allowed}
+.bell{position:relative;cursor:pointer;font-size:14px;line-height:1;user-select:none}
+.bell-badge{position:absolute;top:-5px;right:-5px;background:#ff2d55;color:#fff;border-radius:50%;width:14px;height:14px;font-size:7px;font-weight:700;display:none;align-items:center;justify-content:center;border:1px solid #040407}
 
-  /* ── MAIN ───────────────────────────────────────────────────── */
-  main{max-width:1100px;margin:0 auto;padding:18px}
+/* NAV TABS */
+.nav-tabs{max-width:1100px;margin:0 auto;display:flex;gap:0;border-bottom:1px solid #0a1220;padding:0 16px}
+.ntab{background:transparent;border:none;border-bottom:2px solid transparent;color:#334155;padding:10px 16px;font-family:inherit;font-size:9px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.ntab:hover{color:#94a3b8}
+.ntab.on{color:#00ff88;border-bottom-color:#00ff88}
+.ntab .ntab-badge{display:inline-block;background:#00ff88;color:#000;border-radius:2px;padding:0 4px;font-size:7px;font-weight:700;margin-left:5px;vertical-align:middle}
+.ntab .ntab-badge.pend{background:#f59e0b}
 
-  /* ── STATS ──────────────────────────────────────────────────── */
-  .stats{display:flex;gap:6px;margin-bottom:14px}
-  .stat{flex:1;background:#05080d;border:1px solid #111c2a;padding:13px 15px}
-  .stat-label{font-size:7px;color:#1a3a5c;letter-spacing:.14em;margin-bottom:6px}
-  .stat-value{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1}
+main{max-width:1100px;margin:0 auto;padding:16px}
 
-  /* ── STATUS BAR ─────────────────────────────────────────────── */
-  .status-bar{background:#05080d;border:1px solid #111c2a;padding:6px 13px;margin-bottom:13px;display:flex;gap:10px;font-size:7px;color:#1a3a5c;letter-spacing:.08em;flex-wrap:wrap}
-  .status-bar .dot-sep{color:#111c2a}
+.page{display:none}
+.page.on{display:block}
 
-  /* ── FILTERS ────────────────────────────────────────────────── */
-  .filters{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
-  .fbtn{background:transparent;border:1px solid #1a2535;color:#475569;padding:5px 13px;font-family:inherit;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .15s}
-  .fbtn:hover{border-color:#2d3f55;color:#94a3b8}
-  .fbtn.on{border-color:#00ff88;color:#00ff88;background:rgba(0,255,136,.06)}
-  .filter-count{flex:1;text-align:right;font-size:7px;color:#111c2a;letter-spacing:.1em;align-self:center}
+/* SIGNALS PAGE */
+.stats{display:flex;gap:5px;margin-bottom:13px}
+.stat{flex:1;background:#05080d;border:1px solid #111c2a;padding:12px 13px}
+.stat-lbl{font-size:7px;color:#1a3a5c;letter-spacing:.13em;margin-bottom:5px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1}
 
-  /* ── ALERT CARDS ────────────────────────────────────────────── */
-  .feed{display:flex;flex-direction:column;gap:5px}
-  .empty{background:#05080d;border:1px solid #111c2a;padding:50px;text-align:center}
-  .empty-icon{font-size:36px;margin-bottom:14px;opacity:.5}
-  .empty-title{font-size:9px;color:#1a3a5c;letter-spacing:.25em;margin-bottom:8px}
-  .empty-sub{font-size:7px;color:#0f1923}
-  .scanning-msg{font-size:9px;color:#1a3a5c;letter-spacing:.25em;margin-bottom:9px;animation:glow 2s ease infinite}
+.status-bar{background:#05080d;border:1px solid #111c2a;padding:6px 12px;margin-bottom:12px;display:none;gap:9px;font-size:7px;color:#1a3a5c;letter-spacing:.08em;flex-wrap:wrap}
 
-  .alert-card{border:1px solid #111c2a;background:#05080d;cursor:pointer;transition:border-color .2s,transform .15s;position:relative;overflow:hidden;border-left-width:3px}
-  .alert-card:hover{border-color:#1e3a55;transform:translateX(3px)}
-  .alert-card.new-in{animation:slide-in .3s ease}
-  .alert-card.critical{animation:ring 2s ease infinite}
+.filters{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.fbtn{background:transparent;border:1px solid #1a2535;color:#475569;padding:5px 12px;font-family:inherit;font-size:9px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.fbtn:hover{border-color:#2d3f55;color:#94a3b8}
+.fbtn.on{border-color:#00ff88;color:#00ff88;background:rgba(0,255,136,.06)}
+.fcount{margin-left:auto;font-size:7px;color:#111c2a;letter-spacing:.1em}
 
-  .card-body{padding:13px 15px}
-  .card-row{display:flex;align-items:flex-start;gap:11px;margin-bottom:9px}
+.feed{display:flex;flex-direction:column;gap:4px}
+.empty-box{background:#05080d;border:1px solid #111c2a;padding:48px;text-align:center}
+.empty-icon{font-size:34px;margin-bottom:12px;opacity:.5}
+.empty-title{font-size:9px;color:#1a3a5c;letter-spacing:.22em;margin-bottom:7px}
+.empty-sub{font-size:7px;color:#0f1923}
+.scanning-title{font-size:9px;color:#1a3a5c;letter-spacing:.22em;margin-bottom:7px;animation:glow 2s ease infinite}
 
-  .ticker-box{background:rgba(255,255,255,.025);border:1px solid #0f1923;padding:5px 9px;min-width:60px;text-align:center;flex-shrink:0}
-  .ticker-sym{font-size:15px;font-weight:700;color:#fff;line-height:1}
-  .ticker-co{font-size:6px;color:#1a3a5c;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acard{border:1px solid #111c2a;border-left-width:3px;background:#05080d;cursor:pointer;transition:border-color .2s,transform .15s}
+.acard:hover{border-color:#1e3a55;transform:translateX(2px)}
+.acard.critical-card{animation:ring 2s ease infinite}
 
-  .card-mid{flex:1;min-width:0}
-  .badges{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:5px}
-  .badge-new{background:#00ff88;color:#000;font-size:6px;font-weight:800;padding:1px 5px}
-  .badge-urgency,.badge-cat,.badge-time{font-size:6px;padding:1px 5px;border:1px solid}
-  .card-headline{font-size:12px;color:#cbd5e1;line-height:1.45;font-weight:500}
+.cbody{padding:12px 14px}
+.crow{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.ticker-box{background:rgba(255,255,255,.025);border:1px solid #0f1923;padding:5px 8px;min-width:58px;text-align:center;flex-shrink:0}
+.tsym{font-size:14px;font-weight:700;color:#fff;line-height:1}
+.tco{font-size:6px;color:#1a3a5c;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmid{flex:1;min-width:0}
+.badges{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:5px}
+.bnew{background:#00ff88;color:#000;font-size:6px;font-weight:800;padding:1px 5px}
+.burg,.bcat,.btime{font-size:6px;padding:1px 5px;border:1px solid}
+.chl{font-size:12px;color:#cbd5e1;line-height:1.4;font-weight:500}
+.upbox{text-align:right;flex-shrink:0}
+.upnum{font-family:'Bebas Neue',sans-serif;font-size:23px;color:#00ff88;line-height:1}
+.uplbl{font-size:6px;color:#1a3a5c;margin-top:2px}
+.conf-row{display:flex;align-items:center;gap:7px}
+.ctrack{flex:1;height:2px;background:#0a1220;border-radius:1px;overflow:hidden}
+.cfill{height:100%;border-radius:1px;transition:width .5s}
+.clbl{font-size:7px;color:#1a3a5c;flex-shrink:0}
+.arrow{font-size:7px;color:#111c2a}
 
-  .upside-box{text-align:right;flex-shrink:0}
-  .upside-num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#00ff88;line-height:1}
-  .upside-label{font-size:6px;color:#1a3a5c;margin-top:2px}
+.detail{border-top:1px solid #0a1220;padding:12px 14px;background:rgba(0,0,0,.3);display:none}
+.detail.open{display:block}
+.dlbl{font-size:7px;color:#1a3a5c;letter-spacing:.13em;margin-bottom:5px}
+.dtxt{font-size:11px;color:#94a3b8;line-height:1.75;margin-bottom:11px}
+.dreason{border-left:2px solid;padding-left:10px;margin-bottom:11px}
+.dreason .dtxt{color:#cbd5e1;margin-bottom:0}
+.dmeta{display:flex;gap:10px;font-size:7px;color:#111c2a;flex-wrap:wrap;margin-bottom:8px}
+.dmeta span span{color:#334155}
+.dsource{margin-top:8px;padding-top:8px;border-top:1px solid #0a1220}
+.dsource-lbl{font-size:7px;color:#1a3a5c;letter-spacing:.13em;margin-bottom:5px}
+.dsource-name{font-size:11px;color:#475569;margin-bottom:4px}
+.dsource-link{font-size:11px;color:#00d4ff;word-break:break-all;text-decoration:none}
 
-  .conf-row{display:flex;align-items:center;gap:8px}
-  .conf-track{flex:1;height:2px;background:#0a1220;border-radius:1px;overflow:hidden}
-  .conf-fill{height:100%;border-radius:1px;transition:width .5s}
-  .conf-label{font-size:7px;color:#1a3a5c;flex-shrink:0}
-  .expand-arrow{font-size:7px;color:#111c2a}
+.log-section{margin-top:18px;border-top:1px solid #0a1220;padding-top:13px}
+.log-title{font-size:7px;color:#111c2a;letter-spacing:.18em;margin-bottom:7px}
+.log-row{display:flex;gap:8px;font-size:7.5px;padding:3px 0;border-bottom:1px solid rgba(10,18,32,.8)}
+.lt{color:#1a2535;flex-shrink:0;min-width:70px}
+.ls{color:#0f1923}
+.lm{word-break:break-all;line-height:1.5}
+.lm.info{color:#f59e0b}
+.lm.found{color:#00ff88}
+.lm.clear{color:#334155}
+.lm.error{color:#ff2d55}
 
-  .card-detail{border-top:1px solid #0a1220;padding:13px 15px;background:rgba(0,0,0,.3);display:none}
-  .card-detail.open{display:block}
-  .detail-section{margin-bottom:12px}
-  .detail-label{font-size:7px;color:#1a3a5c;letter-spacing:.14em;margin-bottom:6px}
-  .detail-text{font-size:11px;color:#94a3b8;line-height:1.75}
-  .detail-reasoning{border-left:2px solid;padding-left:11px}
-  .detail-reasoning .detail-text{color:#cbd5e1}
-  .detail-meta{display:flex;gap:12px;font-size:7px;color:#111c2a;flex-wrap:wrap}
-  .detail-meta span span{color:#334155}
+/* ===================== TRACKER PAGE ===================== */
+.trk-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.trk-title-block{}
+.trk-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.15em;color:#fff}
+.trk-sub{font-size:7px;color:#1a3a5c;letter-spacing:.12em;margin-top:3px}
+.trk-actions{display:flex;gap:6px;align-items:center}
+.trk-clear-btn{background:transparent;border:1px solid #1a2535;color:#334155;padding:5px 12px;font-family:inherit;font-size:8px;letter-spacing:.1em;cursor:pointer;transition:all .15s}
+.trk-clear-btn:hover{border-color:#ff2d55;color:#ff2d55}
 
-  /* ── SCAN LOG ───────────────────────────────────────────────── */
-  .log-section{margin-top:20px;border-top:1px solid #0a1220;padding-top:14px}
-  .log-title{font-size:7px;color:#111c2a;letter-spacing:.2em;margin-bottom:8px}
-  .log-row{display:flex;gap:8px;font-size:7.5px;padding:3px 0;border-bottom:1px solid rgba(10,18,32,.8)}
-  .log-time{color:#1a2535;flex-shrink:0;min-width:70px}
-  .log-sep{color:#0f1923}
-  .log-msg{word-break:break-all;line-height:1.5}
-  .log-msg.info{color:#f59e0b}
-  .log-msg.found{color:#00ff88}
-  .log-msg.clear{color:#334155}
-  .log-msg.error{color:#ff2d55}
+/* Accuracy summary cards */
+.acc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:14px}
+.acc-card{background:#05080d;border:1px solid #111c2a;padding:13px}
+.acc-card-lbl{font-size:7px;color:#1a3a5c;letter-spacing:.13em;margin-bottom:6px}
+.acc-card-val{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1}
+.acc-card-sub{font-size:7px;color:#334155;margin-top:3px}
 
-  .footer{margin-top:20px;text-align:center;font-size:7px;color:#0a1220;letter-spacing:.14em}
+/* Breakdown table */
+.breakdown-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.breakdown-box{background:#05080d;border:1px solid #111c2a;padding:12px}
+.breakdown-lbl{font-size:7px;color:#1a3a5c;letter-spacing:.13em;margin-bottom:10px}
+.bk-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bk-name{font-size:9px;color:#475569;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-bar-wrap{width:90px;height:3px;background:#0a1220;border-radius:2px;overflow:hidden;flex-shrink:0}
+.bk-bar-fill{height:100%;border-radius:2px;background:#00ff88;transition:width .5s}
+.bk-pct{font-size:9px;color:#cbd5e1;flex-shrink:0;min-width:32px;text-align:right}
+.bk-n{font-size:7px;color:#334155;flex-shrink:0}
 
-  /* ── ANIMATIONS ─────────────────────────────────────────────── */
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-  @keyframes slide-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-7deg)}80%{transform:rotate(7deg)}}
-  @keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,45,85,.5)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
-  @keyframes glow{0%,100%{opacity:.4}50%{opacity:1}}
-  .shake{animation:shake .6s ease}
+/* Prediction list */
+.pred-section-lbl{font-size:7px;color:#1a3a5c;letter-spacing:.18em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.pred-filters{display:flex;gap:4px;margin-bottom:10px}
+.pfbtn{background:transparent;border:1px solid #1a2535;color:#475569;padding:4px 10px;font-family:inherit;font-size:8px;letter-spacing:.08em;cursor:pointer;transition:all .15s}
+.pfbtn.on{border-color:#00ff88;color:#00ff88;background:rgba(0,255,136,.06)}
+
+.pred-card{border:1px solid #0f1923;border-left:3px solid #1a3a5c;background:#05080d;margin-bottom:4px;transition:border-color .15s}
+.pred-card.outcome-hit{border-left-color:#00ff88}
+.pred-card.outcome-miss{border-left-color:#ff2d55}
+.pred-card.outcome-pending{border-left-color:#f59e0b}
+.pred-card.outcome-checking{border-left-color:#00d4ff}
+.pred-body{padding:10px 13px}
+.pred-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:7px}
+.pred-ticker{font-size:13px;font-weight:700;color:#fff;min-width:52px}
+.pred-info{flex:1;min-width:0}
+.pred-headline{font-size:10px;color:#94a3b8;line-height:1.4;margin-bottom:4px}
+.pred-meta{display:flex;gap:8px;flex-wrap:wrap}
+.pmeta-item{font-size:7px;color:#334155}
+.pmeta-item span{color:#475569}
+.pred-outcome-box{text-align:right;flex-shrink:0;min-width:70px}
+.pred-outcome-badge{font-size:8px;padding:3px 7px;border:1px solid;border-radius:1px;font-weight:700;letter-spacing:.08em;white-space:nowrap}
+.pred-outcome-badge.hit{color:#00ff88;border-color:#00ff8840;background:rgba(0,255,136,.07)}
+.pred-outcome-badge.miss{color:#ff2d55;border-color:#ff2d5540;background:rgba(255,45,85,.07)}
+.pred-outcome-badge.pending{color:#f59e0b;border-color:#f59e0b40;background:rgba(245,158,11,.07)}
+.pred-outcome-badge.checking{color:#00d4ff;border-color:#00d4ff40;background:rgba(0,212,255,.07);animation:glow 1.5s ease infinite}
+.pred-numbers{display:flex;gap:10px;align-items:center;padding-top:7px;border-top:1px solid #0a1220}
+.pred-num-item{display:flex;flex-direction:column;gap:2px}
+.pred-num-lbl{font-size:6px;color:#1a3a5c;letter-spacing:.12em}
+.pred-num-val{font-size:11px;font-weight:700}
+.pred-num-val.pos{color:#00ff88}
+.pred-num-val.neg{color:#ff2d55}
+.pred-num-val.neutral{color:#475569}
+.pred-check-btn{margin-left:auto;background:transparent;border:1px solid #1a2535;color:#475569;padding:4px 10px;font-family:inherit;font-size:7px;letter-spacing:.1em;cursor:pointer;transition:all .15s}
+.pred-check-btn:hover{border-color:#00d4ff;color:#00d4ff}
+.pred-check-btn:disabled{color:#0f1923;border-color:#0a1220;cursor:not-allowed}
+
+/* Empty tracker state */
+.trk-empty{background:#05080d;border:1px solid #111c2a;padding:56px;text-align:center}
+.trk-empty-icon{font-size:36px;margin-bottom:12px;opacity:.4}
+.trk-empty-title{font-size:9px;color:#1a3a5c;letter-spacing:.22em;margin-bottom:6px}
+.trk-empty-sub{font-size:7px;color:#0f1923}
+
+/* Micro progress bar inside pred card */
+.pred-progress{display:flex;gap:5px;align-items:center;margin-top:6px}
+.pred-prog-lbl{font-size:6px;color:#1a3a5c;min-width:24px}
+.pred-prog-track{flex:1;height:2px;background:#0a1220;border-radius:1px;overflow:hidden}
+.pred-prog-fill{height:100%;border-radius:1px;transition:width .5s}
+
+.footer{margin-top:18px;text-align:center;font-size:7px;color:#0a1220;letter-spacing:.13em}
+
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes glow{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,45,85,.5)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-7deg)}80%{transform:rotate(7deg)}}
+@keyframes slidein{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.newin{animation:slidein .3s ease}
+.shakeme{animation:shake .6s ease}
+
+@media(max-width:600px){
+  .acc-grid{grid-template-columns:repeat(2,1fr)}
+  .breakdown-row{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<!-- CONFIG BANNER -->
 <div id="config-banner">
-  <label>BACKEND URL:</label>
-  <input type="text" id="api-url" placeholder="https://your-signal-backend.vercel.app/api/scan" />
-  <button onclick="saveUrl()">SAVE & SCAN</button>
-  <span style="color:#334155;font-size:9px">↑ Paste your Vercel URL here after deploying the backend</span>
+  <span id="config-label">BACKEND URL:</span>
+  <input type="text" id="api-url" placeholder="https://signal-3.vercel.app/api/scan"/>
+  <button id="save-btn">SAVE &amp; SCAN</button>
 </div>
 
-<!-- HEADER -->
 <header>
-  <div class="header-inner">
+  <div class="hdr">
     <div class="logo">
-      <div class="dot" id="status-dot"></div>
+      <div class="dot" id="dot"></div>
       <span class="logo-text">SIGNAL</span>
       <span class="logo-sub">AI MARKET INTELLIGENCE</span>
     </div>
-    <div class="header-right">
+    <div class="hdr-right">
       <div class="timer-wrap">
-        <div class="timer-labels">
+        <div class="timer-top">
           <span>NEXT SCAN</span>
-          <span id="timer-display">5:00</span>
+          <span id="timer-txt">5:00</span>
         </div>
-        <div class="track"><div class="fill" id="timer-fill" style="width:0%"></div></div>
+        <div class="track"><div class="fill" id="fill" style="width:0%"></div></div>
       </div>
-      <button class="scan-btn" id="scan-btn" onclick="runScan()">SCAN NOW</button>
-      <div class="bell" id="bell" onclick="clearUnread()">
+      <button class="scan-btn" id="scan-btn">SCAN NOW</button>
+      <div class="bell" id="bell">
         🔔
-        <div class="bell-badge" id="bell-badge" style="display:none">0</div>
+        <div class="bell-badge" id="bell-badge">0</div>
       </div>
     </div>
+  </div>
+  <!-- NAV TABS -->
+  <div class="nav-tabs">
+    <button class="ntab on" id="tab-signals" onclick="switchTab('signals')">
+      SIGNALS <span class="ntab-badge" id="tab-signals-badge" style="display:none">0</span>
+    </button>
+    <button class="ntab" id="tab-tracker" onclick="switchTab('tracker')">
+      TRACKER <span class="ntab-badge pend" id="tab-tracker-badge" style="display:none">0</span>
+    </button>
   </div>
 </header>
 
-<main>
-  <!-- STATS -->
-  <div class="stats">
-    <div class="stat"><div class="stat-label">TOTAL SIGNALS</div><div class="stat-value" id="stat-total" style="color:#cbd5e1">0</div></div>
-    <div class="stat"><div class="stat-label">CRITICAL</div><div class="stat-value" id="stat-critical" style="color:#ff2d55">0</div></div>
-    <div class="stat"><div class="stat-label">HIGH URGENCY</div><div class="stat-value" id="stat-high" style="color:#ff9500">0</div></div>
-    <div class="stat"><div class="stat-label">10%+ UPSIDE</div><div class="stat-value" id="stat-10plus" style="color:#00ff88">0</div></div>
-  </div>
-
-  <!-- STATUS BAR -->
-  <div class="status-bar" id="status-bar" style="display:none">
-    <span>LAST SCAN</span>
-    <span id="last-time" style="color:#334155"></span>
-    <span class="dot-sep">·</span>
-    <span id="last-analyzed"></span>
-    <span class="dot-sep">·</span>
-    <span id="last-found"></span>
-  </div>
-
-  <!-- FILTERS -->
-  <div class="filters">
-    <button class="fbtn on" onclick="setFilter('all',this)">All Signals</button>
-    <button class="fbtn" onclick="setFilter('critical',this)">Critical Only</button>
-    <button class="fbtn" onclick="setFilter('high',this)">High+ Urgency</button>
-    <button class="fbtn" onclick="setFilter('10plus',this)">10%+ Upside</button>
-    <div class="filter-count" id="filter-count">0 RESULTS</div>
-  </div>
-
-  <!-- FEED -->
-  <div class="feed" id="feed">
-    <div class="empty" id="empty-state">
-      <div class="empty-icon">📡</div>
-      <div class="empty-title">AWAITING SIGNALS</div>
-      <div class="empty-sub">Enter your backend URL above and click SAVE & SCAN</div>
+<!-- =================== SIGNALS PAGE =================== -->
+<div id="page-signals" class="page on">
+  <main>
+    <div class="stats">
+      <div class="stat"><div class="stat-lbl">TOTAL SIGNALS</div><div class="stat-val" id="s-total" style="color:#cbd5e1">0</div></div>
+      <div class="stat"><div class="stat-lbl">CRITICAL</div><div class="stat-val" id="s-crit" style="color:#ff2d55">0</div></div>
+      <div class="stat"><div class="stat-lbl">HIGH URGENCY</div><div class="stat-val" id="s-high" style="color:#ff9500">0</div></div>
+      <div class="stat"><div class="stat-lbl">10%+ UPSIDE</div><div class="stat-val" id="s-10p" style="color:#00ff88">0</div></div>
     </div>
-  </div>
 
-  <!-- SCAN LOG -->
-  <div class="log-section" id="log-section" style="display:none">
-    <div class="log-title">DIAGNOSTIC LOG</div>
-    <div id="log-rows"></div>
-  </div>
+    <div class="status-bar" id="status-bar">
+      <span>LAST SCAN</span>
+      <span id="sb-time" style="color:#334155"></span>
+      <span>·</span>
+      <span id="sb-analyzed"></span>
+      <span>·</span>
+      <span id="sb-found"></span>
+    </div>
 
-  <div class="footer">SIGNAL v5.0 · FOR INFORMATIONAL PURPOSES ONLY · NOT FINANCIAL ADVICE</div>
-</main>
+    <div class="filters">
+      <button class="fbtn on" id="f-all">All Signals</button>
+      <button class="fbtn" id="f-crit">Critical Only</button>
+      <button class="fbtn" id="f-high">High+ Urgency</button>
+      <button class="fbtn" id="f-10p">10%+ Upside</button>
+      <span class="fcount" id="fcount">0 RESULTS</span>
+    </div>
+
+    <div class="feed" id="feed">
+      <div class="empty-box">
+        <div class="empty-icon">📡</div>
+        <div class="empty-title">AWAITING SIGNALS</div>
+        <div class="empty-sub">Enter your backend URL above and click SAVE &amp; SCAN</div>
+      </div>
+    </div>
+
+    <div class="log-section" id="log-section" style="display:none">
+      <div class="log-title">DIAGNOSTIC LOG</div>
+      <div id="log-rows"></div>
+    </div>
+
+    <div class="footer">SIGNAL v6.0 · FOR INFORMATIONAL PURPOSES ONLY · NOT FINANCIAL ADVICE</div>
+  </main>
+</div>
+
+<!-- =================== TRACKER PAGE =================== -->
+<div id="page-tracker" class="page">
+  <main>
+    <div class="trk-header">
+      <div class="trk-title-block">
+        <div class="trk-title">PREDICTION TRACKER</div>
+        <div class="trk-sub">ACCURACY ANALYSIS · ALL LOGGED SIGNALS · NOT FINANCIAL ADVICE</div>
+      </div>
+      <div class="trk-actions">
+        <button class="trk-clear-btn" onclick="clearAllPredictions()">CLEAR ALL</button>
+      </div>
+    </div>
+
+    <!-- Accuracy summary -->
+    <div class="acc-grid" id="acc-grid">
+      <div class="acc-card">
+        <div class="acc-card-lbl">OVERALL ACCURACY</div>
+        <div class="acc-card-val" id="acc-overall" style="color:#cbd5e1">—</div>
+        <div class="acc-card-sub" id="acc-overall-sub">no outcomes yet</div>
+      </div>
+      <div class="acc-card">
+        <div class="acc-card-lbl">TOTAL LOGGED</div>
+        <div class="acc-card-val" id="acc-total" style="color:#cbd5e1">0</div>
+        <div class="acc-card-sub" id="acc-total-sub">signals tracked</div>
+      </div>
+      <div class="acc-card">
+        <div class="acc-card-lbl">AVG PREDICTED</div>
+        <div class="acc-card-val" id="acc-avg-pred" style="color:#00ff88">—</div>
+        <div class="acc-card-sub">estimated upside</div>
+      </div>
+      <div class="acc-card">
+        <div class="acc-card-lbl">AVG ACTUAL</div>
+        <div class="acc-card-val" id="acc-avg-actual" style="color:#cbd5e1">—</div>
+        <div class="acc-card-sub">on resolved signals</div>
+      </div>
+    </div>
+
+    <!-- Breakdown by catalyst + confidence -->
+    <div class="breakdown-row" id="breakdown-row">
+      <div class="breakdown-box">
+        <div class="breakdown-lbl">ACCURACY BY CATALYST TYPE</div>
+        <div id="bk-catalyst">
+          <div style="font-size:8px;color:#1a3a5c;padding:12px 0;text-align:center">No resolved signals yet</div>
+        </div>
+      </div>
+      <div class="breakdown-box">
+        <div class="breakdown-lbl">ACCURACY BY CONFIDENCE TIER</div>
+        <div id="bk-confidence">
+          <div style="font-size:8px;color:#1a3a5c;padding:12px 0;text-align:center">No resolved signals yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prediction list -->
+    <div class="pred-filters">
+      <button class="pfbtn on" id="pf-all" onclick="setPredFilter('all')">ALL</button>
+      <button class="pfbtn" id="pf-pending" onclick="setPredFilter('pending')">PENDING ⏳</button>
+      <button class="pfbtn" id="pf-hit" onclick="setPredFilter('hit')">HITS ✅</button>
+      <button class="pfbtn" id="pf-miss" onclick="setPredFilter('miss')">MISSES ❌</button>
+    </div>
+    <div class="pred-section-lbl">
+      <span>LOGGED PREDICTIONS</span>
+      <span id="pred-count" style="color:#334155">0 TOTAL</span>
+    </div>
+    <div id="pred-list"></div>
+
+    <div class="footer" style="margin-top:24px">SIGNAL v6.0 · TRACKER · FOR INFORMATIONAL PURPOSES ONLY · NOT FINANCIAL ADVICE</div>
+  </main>
+</div>
 
 <script>
-const CATALYST_COLORS = {
+/* ================================================================
+   CONSTANTS & SHARED STATE
+================================================================ */
+var CATALYST_COLORS = {
   "Earnings Beat":"#00ff88","M&A Deal":"#00d4ff","FDA Approval":"#ff6b35",
   "Contract Win":"#ffd700","Analyst Upgrade":"#a78bfa","Regulatory Win":"#34d399",
-  "Macro Tailwind":"#60a5fa","Short Squeeze":"#f472b6","Guidance Raise":"#4ade80"
+  "Macro Tailwind":"#60a5fa","Short Squeeze":"#f472b6","Guidance Raise":"#4ade80",
+  "Clinical Trial":"#f97316","Biotech Catalyst":"#e879f9"
 };
-const URGENCY = {
-  Critical:{color:"#ff2d55",bg:"rgba(255,45,85,0.15)"},
-  High:{color:"#ff9500",bg:"rgba(255,149,0,0.12)"},
-  Medium:{color:"#ffd60a",bg:"rgba(255,214,10,0.10)"}
+var URGENCY_COLORS = {
+  Critical:{c:"#ff2d55",bg:"rgba(255,45,85,0.15)"},
+  High:{c:"#ff9500",bg:"rgba(255,149,0,0.12)"},
+  Medium:{c:"#ffd60a",bg:"rgba(255,214,10,0.10)"}
 };
 
-let alerts = [];
-let filter = "all";
-let countdown = 300;
-let timerInterval = null;
-let scanning = false;
-let unread = 0;
-let seenKeys = new Set();
+var alerts = [];
+var activeFilter = "all";
+var countdown = 300;
+var scanning = false;
+var unread = 0;
+var seenKeys = {};
+var timerTick = null;
+var activeTab = "signals";
 
-// ── URL STORAGE ───────────────────────────────────────────────
-function getApiUrl() {
-  return localStorage.getItem("signal_api_url") || "https://signal-3.vercel.app/api/scan";
-}
-function saveUrl() {
-  const url = document.getElementById("api-url").value.trim();
-  if (!url) return alert("Please enter your Vercel backend URL");
-  localStorage.setItem("signal_api_url", url);
-  runScan();
-}
-window.addEventListener("load", () => {
-  const saved = getApiUrl();
-  if (saved) document.getElementById("api-url").value = saved;
-  requestNotifications();
-  startCountdown();
-  if (saved) runScan();
-});
+/* ================================================================
+   PREDICTION TRACKER STATE
+================================================================ */
+var predictions = [];      // full list
+var predFilter = "all";    // all | pending | hit | miss
 
-// ── COUNTDOWN ─────────────────────────────────────────────────
-function startCountdown() {
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    countdown--;
-    if (countdown <= 0) { countdown = 300; runScan(); }
-    updateTimerUI();
-  }, 1000);
-}
-function updateTimerUI() {
-  const m = Math.floor(countdown / 60);
-  const s = String(countdown % 60).padStart(2, "0");
-  document.getElementById("timer-display").textContent = scanning ? "LIVE" : `${m}:${s}`;
-  const pct = ((300 - countdown) / 300) * 100;
-  document.getElementById("timer-fill").style.width = (scanning ? 100 : pct) + "%";
+var OUTCOME_WINDOW_24H = 24 * 60 * 60 * 1000;
+var OUTCOME_WINDOW_72H = 72 * 60 * 60 * 1000;
+var CHECK_AFTER_MS     = 60 * 1000; // allow checking after 1 min (so manual test works)
+
+function loadPredictions() {
+  try {
+    var raw = localStorage.getItem("signal_predictions");
+    predictions = raw ? JSON.parse(raw) : [];
+  } catch(e) { predictions = []; }
 }
 
-// ── SCAN ──────────────────────────────────────────────────────
-async function runScan() {
-  const url = getApiUrl();
-  if (!url) {
-    pushLog("error", "No backend URL set. Enter your Vercel URL above and click SAVE & SCAN.");
+function savePredictions() {
+  try {
+    localStorage.setItem("signal_predictions", JSON.stringify(predictions));
+  } catch(e) {}
+}
+
+/**
+ * Log a new prediction when a signal fires.
+ * Called automatically for every fresh alert.
+ */
+function logPrediction(alert) {
+  // Don't double-log
+  var exists = predictions.some(function(p){ return p.id === alert.id; });
+  if (exists) return;
+
+  var pred = {
+    id:             alert.id,
+    ticker:         alert.ticker,
+    company:        alert.company || "",
+    headline:       alert.headline || "",
+    catalystType:   alert.catalystType || "Unknown",
+    urgency:        alert.urgency || "Medium",
+    confidence:     alert.confidence || 0,
+    predictedUpside: alert.estimatedUpside || 0,
+    loggedAt:       Date.now(),
+    // outcome fields — filled later
+    outcome:        "pending",   // pending | hit | miss
+    actualMove24h:  null,
+    actualMove72h:  null,
+    checkedAt:      null,
+    source:         alert.source || null
+  };
+  predictions.unshift(pred);
+  savePredictions();
+  updateTrackerBadge();
+}
+
+/**
+ * Fetch price from Yahoo Finance via a CORS proxy and compute % move.
+ * Returns null if unavailable.
+ */
+function fetchPriceChange(ticker, callback) {
+  // Yahoo Finance quote endpoint (no API key needed for basic data)
+  var url = "https://query1.finance.yahoo.com/v8/finance/chart/" + encodeURIComponent(ticker) +
+            "?interval=1d&range=5d";
+  var proxy = "https://corsproxy.io/?" + encodeURIComponent(url);
+
+  fetch(proxy, {method:"GET"})
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      try {
+        var result = data.chart.result[0];
+        var closes = result.indicators.quote[0].close;
+        // Filter out nulls
+        var valid = closes.filter(function(v){ return v !== null && v !== undefined; });
+        if (valid.length < 2) { callback(null); return; }
+        var prev  = valid[valid.length - 2];
+        var cur   = valid[valid.length - 1];
+        var pct   = ((cur - prev) / prev * 100);
+        callback(Math.round(pct * 100) / 100);
+      } catch(e) { callback(null); }
+    })
+    .catch(function(){ callback(null); });
+}
+
+/**
+ * Check outcome for a single prediction.
+ * Uses 24h window: if the stock moved ≥ the predicted upside (at least 5%), mark HIT.
+ */
+function checkOutcome(predId) {
+  var pred = predictions.find(function(p){ return p.id === predId; });
+  if (!pred || pred.outcome !== "pending") return;
+
+  pred.outcome = "checking";
+  savePredictions();
+  renderPredList();
+
+  fetchPriceChange(pred.ticker, function(pct) {
+    pred.checkedAt = Date.now();
+    if (pct === null) {
+      // Couldn't fetch — revert to pending so user can retry
+      pred.outcome = "pending";
+      pred.checkedAt = null;
+      log("error", "Could not fetch price for " + pred.ticker + " — try again later");
+    } else {
+      pred.actualMove24h = pct;
+      // HIT = stock moved up 5%+ (the minimum threshold SIGNAL looks for)
+      pred.outcome = pct >= 5 ? "hit" : "miss";
+      log(pred.outcome === "hit" ? "found" : "clear",
+          pred.ticker + " outcome: " + (pct >= 0 ? "+" : "") + pct + "% — " + (pred.outcome === "hit" ? "✓ HIT" : "✗ MISS"));
+    }
+    savePredictions();
+    renderPredList();
+    renderAccuracy();
+    updateTrackerBadge();
+  });
+}
+
+/**
+ * Auto-check any pending predictions where enough time has passed.
+ * Runs every 60 seconds passively.
+ */
+function autoCheckPending() {
+  var now = Date.now();
+  predictions.forEach(function(pred) {
+    if (pred.outcome === "pending" && (now - pred.loggedAt) >= CHECK_AFTER_MS) {
+      // Don't spam — only auto-check once per 10 min
+      if (!pred._lastAutoCheck || (now - pred._lastAutoCheck) > 10 * 60 * 1000) {
+        pred._lastAutoCheck = now;
+        checkOutcome(pred.id);
+      }
+    }
+  });
+}
+
+function clearAllPredictions() {
+  if (!confirm("Clear all prediction history? This cannot be undone.")) return;
+  predictions = [];
+  savePredictions();
+  renderPredList();
+  renderAccuracy();
+  updateTrackerBadge();
+}
+
+/* ================================================================
+   TRACKER UI RENDERING
+================================================================ */
+function setPredFilter(f) {
+  predFilter = f;
+  ["all","pending","hit","miss"].forEach(function(x){
+    var el = document.getElementById("pf-" + x);
+    if (el) el.classList.toggle("on", x === f);
+  });
+  renderPredList();
+}
+
+function getFilteredPreds() {
+  if (predFilter === "pending") return predictions.filter(function(p){ return p.outcome === "pending" || p.outcome === "checking"; });
+  if (predFilter === "hit")     return predictions.filter(function(p){ return p.outcome === "hit"; });
+  if (predFilter === "miss")    return predictions.filter(function(p){ return p.outcome === "miss"; });
+  return predictions;
+}
+
+function renderPredList() {
+  var list = document.getElementById("pred-list");
+  if (!list) return;
+  var filtered = getFilteredPreds();
+  document.getElementById("pred-count").textContent = filtered.length + " RESULT" + (filtered.length !== 1 ? "S" : "");
+
+  if (predictions.length === 0) {
+    list.innerHTML = '<div class="trk-empty"><div class="trk-empty-icon">📊</div><div class="trk-empty-title">NO PREDICTIONS LOGGED</div><div class="trk-empty-sub">Run a scan on the SIGNALS tab — every alert is automatically tracked here</div></div>';
     return;
   }
-  if (scanning) return;
-  scanning = true;
-  countdown = 300;
-  setScanning(true);
-  pushLog("info", "Initiating market scan...");
 
-  try {
-    const res = await fetch(url, { method: "POST", headers: {"Content-Type":"application/json"}, body: "{}" });
-    pushLog("info", `HTTP ${res.status} ${res.statusText}`);
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="trk-empty"><div class="trk-empty-title">NO ' + predFilter.toUpperCase() + ' PREDICTIONS</div></div>';
+    return;
+  }
 
-    if (!res.ok) {
-      const txt = await res.text();
-      pushLog("error", `Server error: ${txt.slice(0,200)}`);
-      return;
+  var now = Date.now();
+  var html = "";
+  filtered.forEach(function(pred) {
+    var cc       = CATALYST_COLORS[pred.catalystType] || "#334155";
+    var confColor = pred.confidence >= 80 ? "#00ff88" : pred.confidence >= 65 ? "#ffd60a" : "#ff9500";
+    var age      = now - pred.loggedAt;
+    var ageStr   = formatAge(age);
+    var canCheck = pred.outcome === "pending" && age >= CHECK_AFTER_MS;
+
+    // Outcome badge
+    var badgeHtml = "";
+    if (pred.outcome === "hit")      badgeHtml = '<span class="pred-outcome-badge hit">✅ HIT</span>';
+    else if (pred.outcome === "miss") badgeHtml = '<span class="pred-outcome-badge miss">❌ MISS</span>';
+    else if (pred.outcome === "checking") badgeHtml = '<span class="pred-outcome-badge checking">⏳ CHECKING</span>';
+    else {
+      var timeToCheck = CHECK_AFTER_MS - age;
+      var waitStr = timeToCheck > 0 ? "(" + formatAge(timeToCheck) + ")" : "";
+      badgeHtml = '<span class="pred-outcome-badge pending">⏳ PENDING ' + waitStr + '</span>';
     }
 
-    const data = await res.json();
-    if (data.error) { pushLog("error", `API error: ${data.error}`); return; }
-
-    const fresh = (data.alerts || []).filter(a => {
-      if (!a?.ticker) return false;
-      const k = `${a.ticker}|${a.headline}`;
-      if (seenKeys.has(k)) return false;
-      seenKeys.add(k);
-      return true;
-    }).map(a => ({ ...a, id: `${a.ticker}-${Date.now()}-${Math.random()}`, ts: new Date() }));
-
-    if (fresh.length > 0) {
-      alerts = [...fresh, ...alerts].slice(0, 50);
-      unread += fresh.length;
-      updateBell();
-      shakeBell();
-      sendNotification(
-        'SIGNAL: ' + fresh.length + ' new alert' + (fresh.length > 1 ? 's' : ''),
-        fresh.map(a => a.ticker + ' +' + a.estimatedUpside + '% — ' + a.headline).join('
-')
-      );
+    // Actual move display
+    var actualHtml = "";
+    if (pred.actualMove24h !== null) {
+      var mc = pred.actualMove24h >= 5 ? "pos" : pred.actualMove24h >= 0 ? "neutral" : "neg";
+      actualHtml = '<div class="pred-num-item"><div class="pred-num-lbl">ACTUAL MOVE</div><div class="pred-num-val ' + mc + '">' + (pred.actualMove24h >= 0 ? "+" : "") + pred.actualMove24h + '%</div></div>';
     }
 
-    updateStats();
-    renderFeed();
-    updateStatusBar(data.storiesAnalyzed || 0, fresh.length);
-    pushLog(fresh.length > 0 ? "found" : "clear",
-      fresh.length > 0 ? `✓ ${fresh.length} signal(s) found — ${data.storiesAnalyzed||0} stories analyzed`
-                       : `No qualifying signals — ${data.storiesAnalyzed||0} stories analyzed`);
-  } catch (err) {
-    pushLog("error", `Exception: ${err.message}`);
-  } finally {
-    scanning = false;
-    setScanning(false);
+    // Check button
+    var checkBtnHtml = "";
+    if (pred.outcome === "pending") {
+      checkBtnHtml = '<button class="pred-check-btn" ' + (canCheck ? '' : 'disabled title="Wait for market data"') +
+                     ' onclick="event.stopPropagation();checkOutcome(\'' + pred.id + '\')">CHECK OUTCOME</button>';
+    }
+
+    // Progress bars (predicted vs actual)
+    var progressHtml = "";
+    if (pred.actualMove24h !== null) {
+      var predW  = Math.min(Math.abs(pred.predictedUpside) * 4, 100);
+      var actW   = Math.min(Math.abs(pred.actualMove24h) * 4, 100);
+      var actC   = pred.actualMove24h >= 5 ? "#00ff88" : pred.actualMove24h >= 0 ? "#ffd60a" : "#ff2d55";
+      progressHtml = '<div class="pred-progress"><span class="pred-prog-lbl">PRED</span><div class="pred-prog-track"><div class="pred-prog-fill" style="width:' + predW + '%;background:#00ff88"></div></div><span style="font-size:7px;color:#334155;min-width:32px">+' + pred.predictedUpside + '%</span></div>';
+      progressHtml += '<div class="pred-progress"><span class="pred-prog-lbl">REAL</span><div class="pred-prog-track"><div class="pred-prog-fill" style="width:' + actW + '%;background:' + actC + '"></div></div><span style="font-size:7px;color:#334155;min-width:32px">' + (pred.actualMove24h >= 0 ? "+" : "") + pred.actualMove24h + '%</span></div>';
+    }
+
+    html += '<div class="pred-card outcome-' + pred.outcome + '">';
+    html += '<div class="pred-body">';
+    html += '<div class="pred-top">';
+    html += '<div class="pred-ticker">' + pred.ticker + '</div>';
+    html += '<div class="pred-info"><div class="pred-headline">' + pred.headline + '</div>';
+    html += '<div class="pred-meta">';
+    html += '<div class="pmeta-item">CATALYST <span>' + pred.catalystType + '</span></div>';
+    html += '<div class="pmeta-item">CONF <span style="color:' + confColor + '">' + pred.confidence + '%</span></div>';
+    html += '<div class="pmeta-item">AGE <span>' + ageStr + '</span></div>';
+    html += '</div></div>';
+    html += '<div class="pred-outcome-box">' + badgeHtml + '</div>';
+    html += '</div>';
+    html += '<div class="pred-numbers">';
+    html += '<div class="pred-num-item"><div class="pred-num-lbl">PREDICTED</div><div class="pred-num-val pos">+' + pred.predictedUpside + '%</div></div>';
+    html += actualHtml;
+    html += checkBtnHtml;
+    html += '</div>';
+    html += progressHtml;
+    html += '</div></div>';
+  });
+
+  list.innerHTML = html;
+}
+
+function renderAccuracy() {
+  var resolved = predictions.filter(function(p){ return p.outcome === "hit" || p.outcome === "miss"; });
+  var hits     = resolved.filter(function(p){ return p.outcome === "hit"; });
+
+  // Overall accuracy
+  var overallEl    = document.getElementById("acc-overall");
+  var overallSubEl = document.getElementById("acc-overall-sub");
+  if (resolved.length > 0) {
+    var pct = Math.round(hits.length / resolved.length * 100);
+    overallEl.textContent = pct + "%";
+    overallEl.style.color = pct >= 60 ? "#00ff88" : pct >= 40 ? "#ffd60a" : "#ff2d55";
+    overallSubEl.textContent = hits.length + " of " + resolved.length + " signals";
+  } else {
+    overallEl.textContent = "—";
+    overallEl.style.color = "#cbd5e1";
+    overallSubEl.textContent = "no outcomes yet";
+  }
+
+  // Total
+  document.getElementById("acc-total").textContent = predictions.length;
+  document.getElementById("acc-total-sub").textContent =
+    predictions.filter(function(p){ return p.outcome === "pending" || p.outcome === "checking"; }).length + " pending";
+
+  // Avg predicted
+  var avgPredEl = document.getElementById("acc-avg-pred");
+  if (predictions.length > 0) {
+    var avgPred = predictions.reduce(function(s, p){ return s + p.predictedUpside; }, 0) / predictions.length;
+    avgPredEl.textContent = "+" + Math.round(avgPred * 10) / 10 + "%";
+  } else {
+    avgPredEl.textContent = "—";
+  }
+
+  // Avg actual
+  var avgActEl = document.getElementById("acc-avg-actual");
+  if (resolved.length > 0) {
+    var actVals = resolved.filter(function(p){ return p.actualMove24h !== null; })
+                          .map(function(p){ return p.actualMove24h; });
+    if (actVals.length > 0) {
+      var avgAct = actVals.reduce(function(s, v){ return s + v; }, 0) / actVals.length;
+      avgAct = Math.round(avgAct * 10) / 10;
+      avgActEl.textContent = (avgAct >= 0 ? "+" : "") + avgAct + "%";
+      avgActEl.style.color = avgAct >= 5 ? "#00ff88" : avgAct >= 0 ? "#ffd60a" : "#ff2d55";
+    }
+  } else {
+    avgActEl.textContent = "—";
+    avgActEl.style.color = "#cbd5e1";
+  }
+
+  // Breakdown by catalyst
+  renderBreakdown("bk-catalyst", groupBy(resolved, "catalystType"), CATALYST_COLORS);
+
+  // Breakdown by confidence tier
+  var tiered = resolved.map(function(p) {
+    var tier = p.confidence >= 80 ? "High (80%+)" : p.confidence >= 65 ? "Medium (65–79%)" : "Low (<65%)";
+    return Object.assign({}, p, { confTier: tier });
+  });
+  var tierColors = {"High (80%+)":"#00ff88","Medium (65–79%)":"#ffd60a","Low (<65%)":"#ff9500"};
+  renderBreakdown("bk-confidence", groupBy(tiered, "confTier"), tierColors);
+}
+
+function groupBy(arr, key) {
+  var out = {};
+  arr.forEach(function(item) {
+    var k = item[key] || "Unknown";
+    if (!out[k]) out[k] = {hits:0, total:0};
+    out[k].total++;
+    if (item.outcome === "hit") out[k].hits++;
+  });
+  return out;
+}
+
+function renderBreakdown(containerId, groups, colorMap) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  var keys = Object.keys(groups);
+  if (keys.length === 0) {
+    el.innerHTML = '<div style="font-size:8px;color:#1a3a5c;padding:12px 0;text-align:center">No resolved signals yet</div>';
+    return;
+  }
+  // Sort by accuracy desc
+  keys.sort(function(a, b) {
+    var pctA = groups[a].hits / groups[a].total;
+    var pctB = groups[b].hits / groups[b].total;
+    return pctB - pctA;
+  });
+  var html = "";
+  keys.forEach(function(k) {
+    var g   = groups[k];
+    var pct = Math.round(g.hits / g.total * 100);
+    var c   = colorMap[k] || "#334155";
+    html += '<div class="bk-row">';
+    html += '<div class="bk-name" style="color:' + c + '">' + k + '</div>';
+    html += '<div class="bk-bar-wrap"><div class="bk-bar-fill" style="width:' + pct + '%;background:' + c + '"></div></div>';
+    html += '<div class="bk-pct" style="color:' + c + '">' + pct + '%</div>';
+    html += '<div class="bk-n">(' + g.hits + '/' + g.total + ')</div>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function updateTrackerBadge() {
+  var pending = predictions.filter(function(p){ return p.outcome === "pending"; }).length;
+  var badge   = document.getElementById("tab-tracker-badge");
+  if (!badge) return;
+  if (pending > 0) {
+    badge.style.display = "inline-block";
+    badge.textContent = pending;
+  } else {
+    badge.style.display = "none";
   }
 }
 
-// ── UI HELPERS ────────────────────────────────────────────────
-function setScanning(on) {
-  document.getElementById("status-dot").className = on ? "dot scanning" : "dot";
-  document.getElementById("scan-btn").disabled = on;
-  document.getElementById("scan-btn").textContent = on ? "SCANNING" : "SCAN NOW";
+function formatAge(ms) {
+  if (ms < 0) return "now";
+  var secs = Math.floor(ms / 1000);
+  if (secs < 60)   return secs + "s";
+  var mins = Math.floor(secs / 60);
+  if (mins < 60)   return mins + "m";
+  var hrs  = Math.floor(mins / 60);
+  if (hrs < 24)    return hrs + "h";
+  return Math.floor(hrs / 24) + "d";
 }
+
+/* ================================================================
+   TAB SWITCHING
+================================================================ */
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById("page-signals").classList.toggle("on", tab === "signals");
+  document.getElementById("page-tracker").classList.toggle("on", tab === "tracker");
+  document.getElementById("tab-signals").classList.toggle("on", tab === "signals");
+  document.getElementById("tab-tracker").classList.toggle("on", tab === "tracker");
+
+  if (tab === "tracker") {
+    renderAccuracy();
+    renderPredList();
+  }
+}
+
+/* ================================================================
+   SIGNALS PAGE HELPERS (unchanged)
+================================================================ */
+function getUrl() {
+  return localStorage.getItem("signal_url") || "https://signal-3.vercel.app/api/scan";
+}
+
+function log(status, msg) {
+  var sec = document.getElementById("log-section");
+  sec.style.display = "block";
+  var row = document.createElement("div");
+  row.className = "log-row";
+  row.innerHTML = '<span class="lt">' + new Date().toLocaleTimeString() + '</span><span class="ls">›</span><span class="lm ' + status + '">' + msg + '</span>';
+  var rows = document.getElementById("log-rows");
+  rows.insertBefore(row, rows.firstChild);
+  while (rows.children.length > 15) rows.removeChild(rows.lastChild);
+}
+
+function setScanning(on) {
+  scanning = on;
+  var dot = document.getElementById("dot");
+  var btn = document.getElementById("scan-btn");
+  if (on) {
+    dot.className = "dot on";
+    btn.textContent = "SCANNING";
+    btn.disabled = true;
+  } else {
+    dot.className = "dot";
+    btn.textContent = "SCAN NOW";
+    btn.disabled = false;
+  }
+}
+
+function updateTimer() {
+  var m = Math.floor(countdown / 60);
+  var s = countdown % 60;
+  document.getElementById("timer-txt").textContent = scanning ? "LIVE" : (m + ":" + (s < 10 ? "0" : "") + s);
+  var pct = scanning ? 100 : ((300 - countdown) / 300 * 100);
+  document.getElementById("fill").style.width = pct + "%";
+}
+
+function updateStats() {
+  document.getElementById("s-total").textContent = alerts.length;
+  document.getElementById("s-crit").textContent = alerts.filter(function(a){return a.urgency==="Critical";}).length;
+  document.getElementById("s-high").textContent = alerts.filter(function(a){return a.urgency==="High";}).length;
+  document.getElementById("s-10p").textContent = alerts.filter(function(a){return (a.estimatedUpside||0)>=10;}).length;
+}
+
 function updateBell() {
-  const badge = document.getElementById("bell-badge");
+  var badge = document.getElementById("bell-badge");
   if (unread > 0) {
     badge.style.display = "flex";
     badge.textContent = unread > 9 ? "9+" : unread;
@@ -338,150 +828,218 @@ function updateBell() {
     badge.style.display = "none";
   }
 }
-function clearUnread() { unread = 0; updateBell(); }
-function requestNotifications() {
-  if ("Notification" in window) {
-    Notification.requestPermission();
-  }
-}
 
-function sendNotification(title, body) {
-  if ("Notification" in window && Notification.permission === "granted") {
-    new Notification(title, { body: body });
-  }
-}
-
-function shakeBell() {
-  const b = document.getElementById("bell");
-  b.classList.add("shake");
-  setTimeout(() => b.classList.remove("shake"), 700);
-}
-function updateStats() {
-  document.getElementById("stat-total").textContent = alerts.length;
-  document.getElementById("stat-critical").textContent = alerts.filter(a=>a.urgency==="Critical").length;
-  document.getElementById("stat-high").textContent = alerts.filter(a=>a.urgency==="High").length;
-  document.getElementById("stat-10plus").textContent = alerts.filter(a=>(a.estimatedUpside||0)>=10).length;
-}
-function updateStatusBar(analyzed, found) {
-  const bar = document.getElementById("status-bar");
-  bar.style.display = "flex";
-  document.getElementById("last-time").textContent = new Date().toLocaleTimeString();
-  document.getElementById("last-analyzed").textContent = `${analyzed} stories analyzed`;
-  const f = document.getElementById("last-found");
-  f.textContent = found > 0 ? `${found} signal(s) found` : "no qualifying signals";
-  f.style.color = found > 0 ? "#00ff88" : "#1a3a5c";
-}
-function setFilter(f, btn) {
-  filter = f;
-  document.querySelectorAll(".fbtn").forEach(b => b.classList.remove("on"));
-  btn.classList.add("on");
-  renderFeed();
-}
 function getFiltered() {
-  if (filter === "critical") return alerts.filter(a=>a.urgency==="Critical");
-  if (filter === "high") return alerts.filter(a=>a.urgency==="Critical"||a.urgency==="High");
-  if (filter === "10plus") return alerts.filter(a=>(a.estimatedUpside||0)>=10);
+  if (activeFilter === "critical") return alerts.filter(function(a){return a.urgency==="Critical";});
+  if (activeFilter === "high")     return alerts.filter(function(a){return a.urgency==="Critical"||a.urgency==="High";});
+  if (activeFilter === "10plus")   return alerts.filter(function(a){return (a.estimatedUpside||0)>=10;});
   return alerts;
 }
 
-// ── RENDER FEED ───────────────────────────────────────────────
 function renderFeed() {
-  const feed = document.getElementById("feed");
-  const filtered = getFiltered();
-  document.getElementById("filter-count").textContent = `${filtered.length} RESULT${filtered.length!==1?"S":""}`;
+  var feed = document.getElementById("feed");
+  var filtered = getFiltered();
+  document.getElementById("fcount").textContent = filtered.length + " RESULT" + (filtered.length !== 1 ? "S" : "");
 
   if (alerts.length === 0) {
-    feed.innerHTML = `<div class="empty" id="empty-state">
-      <div class="empty-icon">${scanning?"":"📡"}</div>
-      <div class="${scanning?"scanning-msg":"empty-title"}">${scanning?"SCANNING LIVE MARKETS":"AWAITING SIGNALS"}</div>
-      <div class="empty-sub">${scanning?"Searching Reuters · Bloomberg · CNBC · MarketWatch...":"Enter your backend URL above and click SAVE & SCAN"}</div>
-    </div>`;
+    feed.innerHTML = '<div class="empty-box"><div class="empty-icon">' + (scanning ? "" : "📡") + '</div><div class="' + (scanning ? "scanning-title" : "empty-title") + '">' + (scanning ? "SCANNING LIVE MARKETS" : "AWAITING SIGNALS") + '</div><div class="empty-sub">' + (scanning ? "Searching all stocks for 5%+ catalysts..." : "Enter your backend URL above and click SAVE & SCAN") + '</div></div>';
     return;
   }
-
   if (filtered.length === 0) {
-    feed.innerHTML = `<div class="empty"><div class="empty-title">NO RESULTS FOR THIS FILTER</div></div>`;
+    feed.innerHTML = '<div class="empty-box"><div class="empty-title">NO RESULTS FOR THIS FILTER</div></div>';
     return;
   }
 
-  feed.innerHTML = filtered.map(a => {
-    const urg = URGENCY[a.urgency] || URGENCY.Medium;
-    const cc = CATALYST_COLORS[a.catalystType] || "#334155";
-    const confColor = (a.confidence||0) >= 80 ? "#00ff88" : (a.confidence||0) >= 65 ? "#ffd60a" : "#ff9500";
-    return `
-    <div class="alert-card ${a.urgency==="Critical"?"critical":""}" 
-         style="border-left-color:${urg.color}"
-         id="card-${a.id}"
-         onclick="toggleCard('${a.id}')">
-      <div class="card-body">
-        <div class="card-row">
-          <div class="ticker-box">
-            <div class="ticker-sym">${a.ticker}</div>
-            <div class="ticker-co">${(a.company||"").split(" ").slice(0,2).join(" ")}</div>
-          </div>
-          <div class="card-mid">
-            <div class="badges">
-              <span class="badge-urgency" style="color:${urg.color};border-color:${urg.color};background:${urg.bg}">${(a.urgency||"").toUpperCase()}</span>
-              <span class="badge-cat" style="color:${cc};border-color:${cc}44;background:${cc}0d">${a.catalystType||""}</span>
-              <span class="badge-time" style="color:#1a3a5c;border-color:#0f1923">⏱ ${a.timeframe||""}</span>
-            </div>
-            <div class="card-headline">${a.headline||""}</div>
-          </div>
-          <div class="upside-box">
-            <div class="upside-num">+${a.estimatedUpside||0}%</div>
-            <div class="upside-label">EST UPSIDE</div>
-          </div>
-        </div>
-        <div class="conf-row">
-          <div class="conf-track"><div class="conf-fill" style="width:${a.confidence||0}%;background:${confColor}"></div></div>
-          <span class="conf-label">${a.confidence||0}% CONF</span>
-          <span class="expand-arrow" id="arrow-${a.id}">▼</span>
-        </div>
-      </div>
-      <div class="card-detail" id="detail-${a.id}">
-        <div class="detail-section">
-          <div class="detail-label">WHAT HAPPENED</div>
-          <div class="detail-text">${a.summary||""}</div>
-        </div>
-        <div class="detail-section detail-reasoning" style="border-left-color:${cc}">
-          <div class="detail-label">WHY 5%+ MOVE</div>
-          <div class="detail-text">${a.reasoning||""}</div>
-        </div>
-        <div class="detail-meta">
-          <span>TICKER <span>${a.ticker}</span></span>
-          <span>COMPANY <span>${a.company||""}</span></span>
-          <span>DETECTED <span>${a.ts?.toLocaleTimeString()||""}</span></span>
-        </div>
-        ${a.source ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #0a1220">
-          <div style="font-size:7px;color:#1a3a5c;letter-spacing:.14em;margin-bottom:6px">SOURCE</div>
-          <div style="font-size:11px;color:#475569;margin-bottom:4px">${a.sourceName||"Unknown"} ${a.newsTime ? "· " + a.newsTime : ""}</div>
-          <a href="${a.source}" target="_blank" style="font-size:11px;color:#00d4ff;word-break:break-all;text-decoration:none">🔗 Verify this story →</a>
-        </div>` : ""}
-      </div>
-    </div>`;
-  }).join("");
+  var html = "";
+  for (var i = 0; i < filtered.length; i++) {
+    var a   = filtered[i];
+    var urg = URGENCY_COLORS[a.urgency] || URGENCY_COLORS.Medium;
+    var cc  = CATALYST_COLORS[a.catalystType] || "#334155";
+    var conf = a.confidence || 0;
+    var confColor = conf >= 80 ? "#00ff88" : conf >= 65 ? "#ffd60a" : "#ff9500";
+    var sourceHtml = "";
+    if (a.source) {
+      sourceHtml = '<div class="dsource"><div class="dsource-lbl">SOURCE</div><div class="dsource-name">' + (a.sourceName||"Unknown") + (a.newsTime ? " · " + a.newsTime : "") + '</div><a class="dsource-link" href="' + a.source + '" target="_blank">🔗 Verify this story →</a></div>';
+    }
+    html += '<div class="acard' + (a.urgency === "Critical" ? " critical-card" : "") + (a.isNew ? " newin" : "") + '" style="border-left-color:' + urg.c + '" onclick="toggleCard(\'' + a.id + '\')">';
+    html += '<div class="cbody"><div class="crow">';
+    html += '<div class="ticker-box"><div class="tsym">' + a.ticker + '</div><div class="tco">' + (a.company||"").split(" ").slice(0,2).join(" ") + '</div></div>';
+    html += '<div class="cmid"><div class="badges">';
+    if (a.isNew) html += '<span class="bnew">NEW</span>';
+    html += '<span class="burg" style="color:' + urg.c + ';border-color:' + urg.c + ';background:' + urg.bg + '">' + (a.urgency||"").toUpperCase() + '</span>';
+    html += '<span class="bcat" style="color:' + cc + ';border-color:' + cc + '44;background:' + cc + '0d">' + (a.catalystType||"") + '</span>';
+    html += '<span class="btime" style="color:#1a3a5c;border-color:#0f1923">⏱ ' + (a.timeframe||"") + '</span>';
+    html += '</div><div class="chl">' + (a.headline||"") + '</div></div>';
+    html += '<div class="upbox"><div class="upnum">+' + (a.estimatedUpside||0) + '%</div><div class="uplbl">EST UPSIDE</div></div>';
+    html += '</div>';
+    html += '<div class="conf-row"><div class="ctrack"><div class="cfill" style="width:' + conf + '%;background:' + confColor + '"></div></div><span class="clbl">' + conf + '% CONF</span><span class="arrow" id="arrow-' + a.id + '">▼</span></div>';
+    html += '</div>';
+    html += '<div class="detail" id="detail-' + a.id + '" onclick="event.stopPropagation()">';
+    html += '<div class="dlbl">WHAT HAPPENED</div><div class="dtxt">' + (a.summary||"") + '</div>';
+    html += '<div class="dreason" style="border-left-color:' + cc + '"><div class="dlbl">WHY 5%+ MOVE</div><div class="dtxt">' + (a.reasoning||"") + '</div></div>';
+    html += '<div class="dmeta"><span>TICKER <span>' + a.ticker + '</span></span><span>DETECTED <span>' + (a.ts ? new Date(a.ts).toLocaleTimeString() : "") + '</span></span></div>';
+    html += sourceHtml;
+    html += '</div></div>';
+  }
+  feed.innerHTML = html;
 }
 
 function toggleCard(id) {
-  const detail = document.getElementById(`detail-${id}`);
-  const arrow = document.getElementById(`arrow-${id}`);
-  const isOpen = detail.classList.toggle("open");
+  var detail = document.getElementById("detail-" + id);
+  var arrow  = document.getElementById("arrow-" + id);
+  if (!detail) return;
+  var isOpen = detail.classList.toggle("open");
   arrow.textContent = isOpen ? "▲" : "▼";
 }
 
-// ── LOG ───────────────────────────────────────────────────────
-function pushLog(status, msg) {
-  const section = document.getElementById("log-section");
-  section.style.display = "block";
-  const row = document.createElement("div");
-  row.className = "log-row";
-  row.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString()}</span><span class="log-sep">›</span><span class="log-msg ${status}">${msg}</span>`;
-  const rows = document.getElementById("log-rows");
-  rows.insertBefore(row, rows.firstChild);
-  // Keep max 15
-  while (rows.children.length > 15) rows.removeChild(rows.lastChild);
+function setFilter(f) {
+  activeFilter = f;
+  ["all","crit","high","10p"].forEach(function(x){
+    document.getElementById("f-" + x).classList.remove("on");
+  });
+  var map = {all:"f-all",critical:"f-crit",high:"f-high","10plus":"f-10p"};
+  if (map[f]) document.getElementById(map[f]).classList.add("on");
+  renderFeed();
 }
+
+/* ================================================================
+   MAIN SCAN
+================================================================ */
+function runScan() {
+  var url = getUrl();
+  if (!url) { log("error", "No backend URL. Enter URL above and click SAVE & SCAN."); return; }
+  if (scanning) return;
+  setScanning(true);
+  countdown = 300;
+  log("info", "Initiating market scan...");
+
+  fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"})
+    .then(function(res) {
+      log("info", "HTTP " + res.status);
+      if (!res.ok) return res.text().then(function(t){ throw new Error("HTTP " + res.status + ": " + t.slice(0,100)); });
+      return res.json();
+    })
+    .then(function(data) {
+      if (data.error) throw new Error("API: " + data.error);
+
+      // ── MARKET CLOSED ──
+      if (data.marketClosed) {
+        log("clear", "⏸ " + (data.message || "Market closed — scanning paused until 4:00 AM ET"));
+        // Show closed state in feed if no alerts yet
+        if (alerts.length === 0) {
+          document.getElementById("feed").innerHTML =
+            '<div class="empty-box"><div class="empty-icon">🌙</div>' +
+            '<div class="empty-title">MARKET CLOSED</div>' +
+            '<div class="empty-sub">Scanning resumes at 4:00 AM ET (pre-market open)</div></div>';
+        }
+        // Slow the countdown to 15 min during closed hours to avoid wasteful polling
+        countdown = 900;
+        return;
+      }
+      // ───────────────────
+
+      var fresh = (data.alerts || []).filter(function(a) {
+        if (!a || !a.ticker) return false;
+        var k = a.ticker + "|" + a.headline;
+        if (seenKeys[k]) return false;
+        seenKeys[k] = true;
+        return true;
+      }).map(function(a) {
+        return Object.assign({}, a, {id: a.ticker + "-" + Date.now() + "-" + Math.random(), ts: Date.now(), isNew: true});
+      });
+
+      if (fresh.length > 0) {
+        alerts = fresh.concat(alerts).slice(0, 50);
+        unread += fresh.length;
+
+        // ── AUTO-LOG TO TRACKER ──
+        fresh.forEach(function(a) { logPrediction(a); });
+        updateTrackerBadge();
+        // ─────────────────────────
+
+        updateBell();
+        var bell = document.getElementById("bell");
+        bell.classList.add("shakeme");
+        setTimeout(function(){ bell.classList.remove("shakeme"); }, 700);
+        setTimeout(function(){
+          fresh.forEach(function(a){ a.isNew = false; });
+          renderFeed();
+        }, 30000);
+        if (window.Notification && Notification.permission === "granted") {
+          new Notification("SIGNAL: " + fresh.length + " new alert" + (fresh.length > 1 ? "s" : ""), {
+            body: fresh.map(function(a){ return a.ticker + " +" + a.estimatedUpside + "% — " + a.headline; }).join("\n")
+          });
+        }
+        // Update signal count badge on tab
+        var sb = document.getElementById("tab-signals-badge");
+        sb.textContent = alerts.length;
+        sb.style.display = "inline-block";
+      }
+
+      updateStats();
+      renderFeed();
+      var sb = document.getElementById("status-bar");
+      sb.style.display = "flex";
+      document.getElementById("sb-time").textContent = new Date().toLocaleTimeString();
+      document.getElementById("sb-analyzed").textContent = (data.storiesAnalyzed||0) + " stories analyzed";
+      var sbf = document.getElementById("sb-found");
+      sbf.textContent = fresh.length > 0 ? fresh.length + " signal(s) found" : "no qualifying signals";
+      sbf.style.color = fresh.length > 0 ? "#00ff88" : "#1a3a5c";
+      log(fresh.length > 0 ? "found" : "clear", fresh.length > 0 ? "✓ " + fresh.length + " signal(s) — " + (data.storiesAnalyzed||0) + " stories scanned" : "No signals — " + (data.storiesAnalyzed||0) + " stories scanned");
+    })
+    .catch(function(err) {
+      log("error", "Exception: " + (err.message || String(err)));
+    })
+    .finally(function() {
+      setScanning(false);
+    });
+}
+
+/* ================================================================
+   TIMER + INIT
+================================================================ */
+timerTick = setInterval(function() {
+  if (!scanning) {
+    countdown--;
+    if (countdown <= 0) { countdown = 300; runScan(); }
+  }
+  updateTimer();
+}, 1000);
+
+// Auto-check pending predictions every 60 seconds
+setInterval(autoCheckPending, 60 * 1000);
+
+// Also re-render pred list every 30s to update age timers
+setInterval(function() {
+  if (activeTab === "tracker") renderPredList();
+}, 30 * 1000);
+
+document.getElementById("save-btn").addEventListener("click", function() {
+  var url = document.getElementById("api-url").value.trim();
+  if (!url) { alert("Please enter your Vercel backend URL"); return; }
+  localStorage.setItem("signal_url", url);
+  runScan();
+});
+document.getElementById("scan-btn").addEventListener("click", function() { runScan(); });
+document.getElementById("bell").addEventListener("click", function() { unread = 0; updateBell(); });
+document.getElementById("f-all").addEventListener("click",  function(){ setFilter("all"); });
+document.getElementById("f-crit").addEventListener("click", function(){ setFilter("critical"); });
+document.getElementById("f-high").addEventListener("click", function(){ setFilter("high"); });
+document.getElementById("f-10p").addEventListener("click",  function(){ setFilter("10plus"); });
+
+// Init
+(function() {
+  var saved = localStorage.getItem("signal_url") || "https://signal-3.vercel.app/api/scan";
+  document.getElementById("api-url").value = saved;
+  loadPredictions();
+  updateTrackerBadge();
+  renderAccuracy();
+  renderPredList();
+  if (window.Notification && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+  runScan();
+})();
 </script>
 </body>
 </html>
-
